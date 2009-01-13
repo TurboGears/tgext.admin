@@ -13,7 +13,22 @@ except ImportError:
 Rum = None
 
 from tgext.crud import CrudRestController
-from tgext.admin.widgets import load_config
+from tgext.admin.config import load_config
+
+engine = 'genshi'
+try:
+    import chameleon.genshi
+    import pylons.config
+    if 'chameleon_genshi' in pylons.config['renderers']:
+        engine = 'chameleon_genshi'
+    else:
+        import warnings
+        warnings.warn('The renderer for \'chameleon_genshi\' templates is missing.'\
+                      'Your code could run much faster if you'\
+                      'add the following line in you app_cfg.py: "base_config.renderers.append(\'chameleon_genshi\')"')
+except ImportError:
+    pass
+
 
 """
 class GroupController(CrudRestController):
@@ -37,13 +52,15 @@ class AdminController(TGController):
     """
     A basic controller that handles User Groups and Permissions for a TG application.
     """
-    def __init__(self, session, model):
+    def __init__(self, session, model, config=None):
+        if config is None:
+            config = {}
         if Catwalk is not None:
             self.catwalk     = SecuredCatwalk(session)
         if Rum is not None:
             self.rum = Rum(model)
 
-        config = load_config(session, model)
+        config = load_config(session, model, config)
 
         m=model
         class UserController(CrudRestController):
@@ -77,6 +94,6 @@ class AdminController(TGController):
         self.permissions      = PermissionController(session)
 
     @with_trailing_slash
-    @expose('tgext.admin.templates.index')
+    @expose(engine+':tgext.admin.templates.index')
     def index(self):
         return dict(page='index')

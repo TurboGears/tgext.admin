@@ -14,42 +14,61 @@ from sprox.fillerbase import RecordFiller
 from sprox.formbase import AddRecordForm, EditableForm
 
 
-def load_config(DBSession, model):
+def load_config(DBSession, model, load_config):
     config = Bunch()
     m = model
-
-    class UserTable(TableBase):
-        __model__ = m.User
-        #__limit_fields__ = ['display_name', 'email_address']
-        __omit_fields__ = ['user_id', '_password', 'password', 'town_id']
-        __url__ = '../users.json'
-    config.user_table = UserTable(DBSession)
-
-    class UserTableFiller(TableFiller):
-        __model__ = m.User
-    #    __limit_fields__ = ['user_id', 'display_name', 'email_address']
-        __omit_fields__ = ['_password', 'password', 'town_id']
-    config.user_table_filler = UserTableFiller(DBSession)
+    
+    if not 'translations' in load_config:
+        config['translations']  = {}
+        
+    user_id_field      = load_config['translations'].get('user_id', 'user_id')
+    user_name_field    = load_config['translations'].get('user_name', 'user_name')
+    email_field        = load_config['translations'].get('email_address', 'email_address')
+    password_field     = load_config['translations'].get('password', 'password')
+    display_name_field = load_config['translations'].get('display_name', 'display_name')
+    
+    if 'user_table' not in load_config:
+        class UserTable(TableBase):
+            __model__ = m.User
+            #__limit_fields__ = ['display_name', 'email_address']
+            __omit_fields__ = [user_id_field, '_password', password_field]
+            __url__ = '../users.json'
+        config.user_table = UserTable(DBSession)
+    else:
+        config.user_table = load_config.user_table
+        
+    if 'user_table_filler' not in load_config:
+        class UserTableFiller(TableFiller):
+            __model__ = m.User
+            __omit_fields__ = ['_password', password_field]
+        config.user_table_filler = UserTableFiller(DBSession)
+    else:
+        config.user_table_filler = load_config.user_table_filler
 
     class UserEditForm(EditableForm):
         __model__ = m.User
-        __require_fields__     = ['user_name', 'email_address']
-        __omit_fields__        = ['password', 'created', '_password']
-        __hidden_fields__      = ['user_id']
-        __field_order__        = ['user_name', 'email_address', 'display_name', 'groups']
-        email_address          = TextField
-        display_name           = TextField
+        __require_fields__     = [user_name_field, email_field]
+        __omit_fields__        = [password_field, 'created', '_password']
+        __hidden_fields__      = [user_id_field]
+        __field_order__        = [user_name_field, email_field, display_name_field, 'groups']
+    if email_field is not None:
+        setattr(UserEditForm, email_field, TextField)
+    if display_name_field is not None:
+        setattr(UserEditForm, display_name_field, TextField)
 
     config.user_edit_form = UserEditForm(DBSession)
 
     class UserNewForm(AddRecordForm):
         __model__ = m.User
-        __require_fields__     = ['user_name', 'email_address']
-        __omit_fields__        = ['_password', 'created', 'password']
-        __hidden_fields__      = ['user_id']
-        __field_order__        = ['user_name', 'email_address', 'display_name', 'groups']
-        email_address          = TextField
-        display_name           = TextField
+        __require_fields__     = [user_name_field, email_field]
+        __omit_fields__        = [password_field, 'created', '_password']
+        __hidden_fields__      = [user_id_field]
+        __field_order__        = [user_name_field, email_field, display_name_field, 'groups']
+    if email_field is not None:
+        setattr(UserNewForm, email_field, TextField)
+    if display_name_field is not None:
+        setattr(UserNewForm, display_name_field, TextField)
+
     config.user_new_form = UserNewForm(DBSession)
 
     class UserEditFiller(RecordFiller):
