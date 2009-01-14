@@ -19,7 +19,7 @@ def load_config(DBSession, model, load_config):
     m = model
     
     if not 'translations' in load_config:
-        config['translations']  = {}
+        load_config['translations']  = {}
         
     user_id_field      = load_config['translations'].get('user_id', 'user_id')
     user_name_field    = load_config['translations'].get('user_name', 'user_name')
