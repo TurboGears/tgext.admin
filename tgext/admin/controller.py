@@ -32,14 +32,15 @@ except ImportError:
 from repoze.what.predicates import in_group
 
 class SecuredCatwalk(Catwalk):
-    allow_only = in_group('managers')
+    pass
+    #allow_only = in_group('managers')
 
 
 class AdminController(TGController):
     """
     A basic controller that handles User Groups and Permissions for a TG application.
     """
-    allow_only = in_group('managers')
+    #allow_only = in_group('managers')
 
     def __init__(self, session, model, config=None):
         if config is None:
