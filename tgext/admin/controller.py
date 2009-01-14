@@ -29,29 +29,18 @@ try:
 except ImportError:
     pass
 
-
-"""
-class GroupController(CrudRestController):
-    table = group_table
-    table_filler = group_table_filler
-    model = Group
-
-class PermissionController(CrudRestController):
-    table = permission_table
-    table_filler = permission_table_filler
-    model = Permission
-"""
 from repoze.what.predicates import in_group
 
 class SecuredCatwalk(Catwalk):
-    pass
-    #allow_only = in_group('managers')
+    allow_only = in_group('managers')
 
 
 class AdminController(TGController):
     """
     A basic controller that handles User Groups and Permissions for a TG application.
     """
+    allow_only = in_group('managers')
+
     def __init__(self, session, model, config=None):
         if config is None:
             config = {}
