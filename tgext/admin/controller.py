@@ -23,9 +23,9 @@ try:
         engine = 'chameleon_genshi'
     else:
         import warnings
-        warnings.warn('The renderer for \'chameleon_genshi\' templates is missing.'\
-                      'Your code could run much faster if you'\
-                      'add the following line in you app_cfg.py: "base_config.renderers.append(\'chameleon_genshi\')"')
+        #warnings.warn('The renderer for \'chameleon_genshi\' templates is missing.'\
+        #              'Your code could run much faster if you'\
+        #              'add the following line in you app_cfg.py: "base_config.renderers.append(\'chameleon_genshi\')"')
 except ImportError:
     pass
 
@@ -33,14 +33,13 @@ from repoze.what.predicates import in_group
 
 class SecuredCatwalk(Catwalk):
     pass
-    #allow_only = in_group('managers')
-
-
+    allow_only = in_group('managers')
+    
 class AdminController(TGController):
     """
     A basic controller that handles User Groups and Permissions for a TG application.
     """
-    #allow_only = in_group('managers')
+    allow_only = in_group('managers')
 
     def __init__(self, session, model, config=None):
         if config is None:
