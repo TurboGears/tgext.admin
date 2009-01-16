@@ -13,13 +13,11 @@
 </head>
 
 <body>
-    <h2>Site Administration</h2>
-    This page provides a set of simple administrative tasks to help you get your site going.
+    <h2>TurboGears Admin</h2>
+    This is a fully-configurable administrative tool to help you administer your website.
+    
     <ul>
-      <li><a href='users'>Users</a> A listing of Users for you to peruse and edit.</li>
-      <li><a href='groups'>Groups</a> A listing of Groups for you to peruse and edit.</li>
-      <li><a href='permissions'>Permissions</a> A listing of Permissions for you to peruse and edit.</li>
-      <li><a href='catwalk'>Catwalk</a> A system to view all of the models in your database.</li>
+      <li py:for="model in models"><a href='${model}/'>${model}s</a></li>
     </ul>
 </body>
 </html>

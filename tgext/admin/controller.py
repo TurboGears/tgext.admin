@@ -1,5 +1,5 @@
 """Admin Controller"""
-
+from sqlalchemy.orm import class_mapper
 import inspect
 
 from tg.controllers import TGController, expose
@@ -44,33 +44,45 @@ class AdminController(TGController):
     """
     allow_only = in_group('managers')
 
-    def _make_controller(self, config):
+    def _make_controller(self, config, session):
         m = config.model
         class ModelController(CrudRestController):
             model        = m
-            table        = config.table
-            table_filler = config.table_filler
-            new_form     = config.new_form
-            edit_form    = config.edit_form
-            edit_filler  = config.edit_filler
+            table        = config.table_type(session)
+            table_filler = config.table_filler_type(session)
+            new_form     = config.new_form_type(session)
+            new_filler   = config.new_filler_type(session)
+            edit_form    = config.edit_form_type(session)
+            edit_filler  = config.edit_filler_type(session)
             allow_only   = config.allow_only
-        return ModelController(config.session)
+        return ModelController(session)
 
-    def __init__(self, models, sessions=None, translations=None, config_type=None):
+    def __init__(self, models, session, translations=None, config_type=None):
         if translations is None:
             translations = {}
         if config_type is None:
-            config = AdminConfig(models, sessions, translations)
+            config = AdminConfig(models, translations)
         else:
-            config = config_type(models, sessions, translations)
-            
-        for model_name in config.keys():
-            model_config = config[model_name]
-            if isinstance(model_config, RestControllerConfig) and not hasattr(self, model_name):
-                crud_controller = self._make_controller(model_config)
-                setattr(self, model_config.model.__name__, crud_controller)
+            config = config_type(models, translations)
+
+        if config.index_template:
+            engines =  engines = self.index.decoration.engines
+            text_engine = engines.get('text/html')
+            template = config.index_template.split(':')
+            template.extend(text_engine[2:])
+            engines['text/html'] = template
+
+        self.config = config
+        self.session = session
         
     @with_trailing_slash
     @expose(engine+':tgext.admin.templates.index')
     def index(self):
-        return dict(page='index')
+        return dict(page='index', models=self.config.models)
+    
+    @expose()
+    def lookup(self, model_name, *args):
+        model = self.config.models[model_name]
+        config = self.config.lookup_controller_config(model_name)
+        controller = self._make_controller(config, self.session)
+        return controller, args

@@ -1,7 +1,7 @@
 import inspect
 from tw.forms import TextField
-from sqlalchemy.orm import class_mapper, sessionmaker
-from tg.util import Bunch
+from sqlalchemy.orm import class_mapper
+from sqlalchemy.orm.exc import UnmappedClassError
 try:
     import tw.dojo
     from sprox.dojo.tablebase import DojoTableBase as TableBase
@@ -14,68 +14,54 @@ from sprox.fillerbase import RecordFiller, AddFormFiller
 from sprox.formbase import AddRecordForm, EditableForm
 
 
-class RestControllerConfig(Bunch):
+class RestControllerConfig(object):
     allow_only        = None
 
-    @property
-    def table_type(self):
-        class Table(TableBase):
-            __entity__=self.model
-        return Table
-    @property
-    def table_filler_type(self):
-        class MyTableFiller(TableFiller):
-            __entity__ = self.model
-        return MyTableFiller
-
-    @property
-    def edit_filler_type(self):
-        class EditFiller(RecordFiller):
-            __entity__ = self.model
-        return EditFiller
-
-    @property
-    def new_filler_type(self):
-        class NewFiller(AddFormFiller):
-            __entity__ = self.model
-        return NewFiller
-    
-    @property
-    def edit_form_type(self):
-        class EditForm(EditableForm):
-            __entity__ = self.model
-        return EditForm
-
-    @property
-    def new_form_type(self):
-        class NewForm(AddRecordForm):
-            __entity__ = self.model
-        return NewForm
-    
-    def __init__(self, model, session, translations=None):
-        super(RestControllerConfig, self).__init__()
-
-        self.model = model
-        self.session = session
+    def _post_init(self):
+        if not hasattr(self, 'table_type'):
+            class Table(TableBase):
+                __entity__=self.model
+            self.table_type = Table
+        if not hasattr(self, 'table_filler_type'):
+            class MyTableFiller(TableFiller):
+                __entity__ = self.model
+            self.table_filler_type = MyTableFiller
         
-        if translations is not None:
-            self._do_init_with_translations(translations)
+        if not hasattr(self, 'edit_form_type'):
+            class EditForm(EditableForm):
+                __entity__ = self.model
+            self.edit_form_type = EditForm
+        
+        if not hasattr(self, 'edit_filler_type'):
+            class EditFiller(RecordFiller):
+                __entity__ = self.model
+            self.edit_filler_type = EditFiller
+    
+        if not hasattr(self, 'new_form_type'):
+            class NewForm(AddRecordForm):
+                __entity__ = self.model
+            self.new_form_type = NewForm
+        
+        if not hasattr(self, 'new_filler_type'):
+            class NewFiller(AddFormFiller):
+                __entity__ = self.model
+            self.new_filler_type = NewFiller
+    
+    
+    def __init__(self, model, translations=None):
+        super(RestControllerConfig, self).__init__()
+        self.model = model
 
-        #assign the model to all the tables
-        attrs = ['table_type', 'table_filler_type', 'edit_form_type', 'edit_filler_type', 'new_form_type', 'new_filler_type']
-
-        for attr_type in attrs:
-            attr = attr_type[:-5]
-            if not hasattr(self, attr):
-                form = getattr(self, attr_type)(session)
-                form.__entity__ = model
-                setattr(self, attr, form)
+        self._do_init_with_translations(translations)
             
+        self._post_init()
+
     def _do_init_with_translations(self, translations):
         pass
     
 class UserControllerConfig(RestControllerConfig):
     def _do_init_with_translations(self, translations):
+        
         user_id_field      = translations.get('user_id',       'user_id')
         user_name_field    = translations.get('user_name',     'user_name')
         email_field        = translations.get('email_address', 'email_address')
@@ -86,12 +72,12 @@ class UserControllerConfig(RestControllerConfig):
             __entity__ = self.model
             __omit_fields__ = [user_id_field, '_password', password_field, 'lastName']
             __url__ = '../users.json'
-        self.table = Table(self.session)
+        self.table_type = Table
         
         class MyTableFiller(TableFiller):
             __entity__ = self.model
             __omit_fields__ = ['_password', password_field]
-        self.table_filler = MyTableFiller(self.session)
+        self.table_filler_type = MyTableFiller
 
         class EditForm(EditableForm):
             __entity__ = self.model
@@ -103,7 +89,7 @@ class UserControllerConfig(RestControllerConfig):
             setattr(EditForm, email_field, TextField)
         if display_name_field is not None:
             setattr(EditForm, display_name_field, TextField)
-        self.edit_form = EditForm(self.session)
+        self.edit_form_type = EditForm
     
         class NewForm(AddRecordForm):
             __entity__ = self.model
@@ -115,7 +101,7 @@ class UserControllerConfig(RestControllerConfig):
             setattr(NewForm, email_field, TextField)
         if display_name_field is not None:
             setattr(NewForm, display_name_field, TextField)
-        self.new_form = NewForm(self.session)
+        self.new_form_type = NewForm
     
 class GroupControllerConfig(RestControllerConfig):
     def _do_init_with_translations(self, translations):
@@ -128,60 +114,45 @@ class PermissionControllerConfig(RestControllerConfig):
         permission_name_field            = translations.get('permission_name', 'permission_name')
         permission_description_field     = translations.get('permission_description', 'description')
 
-class AdminConfig(Bunch):
+class AdminConfig(object):
     
-    User_config_type = UserControllerConfig
-    Group_config_type = GroupControllerConfig
-    Permission_config_type = PermissionControllerConfig
-    Default_config_type = RestControllerConfig
+    User       = UserControllerConfig
+    Group      = GroupControllerConfig
+    Permission = PermissionControllerConfig
     
-    index_template =  'genshi:tgext.admin.templates.index'
+    DefaultControllerConfig    = RestControllerConfig
     
-    def __init__(self, models, sessions=None, translations=None, list_non_configured_models=True):
+    default_index_template =  None
+    
+    def __init__(self, models, translations=None):
 
-        if sessions is None:
-            sessions = []
-        if not isinstance(sessions, list):
-            sessions = [sessions,]
+        
         if translations is None:
-            translations = Bunch()
+            translations = {}
         
         if inspect.ismodule(models):
             models = [getattr(models, model) for model in dir(models) if inspect.isclass(getattr(models, model))]
 
         #purge all non-model objects
         try_models = models
-        models = []
+        models = {}
         for model in try_models:
+            if not inspect.isclass(model):
+                continue
             try:
                 mapper = class_mapper(model)
-                models.append(model)
-            except:
+                models[model.__name__] = model
+            except UnmappedClassError:
                 pass
-            
-        for model in models:
-            model_name = model.__name__
-            mapper = class_mapper(model)
-            engine = mapper.tables[0].bind
-
-            session = None
-            for session in sessions:
-                if session.bind is engine:
-                    model_session = session
-            if session is None:
-                model_session = sessionmaker(bind=engine)
-                sessions.append(model_session)
-
-            controller_type_name = model_name+'_config_type'
-            if hasattr(self, controller_type_name):
-                controller_config = getattr(self, controller_type_name)(model, model_session, translations)
-            else:
-                controller_config = self.Default_config_type(model, model_session, translations)
-            setattr(self, model.__name__, controller_config)
-
-        self.session = sessions
+        self.models = models
         self.translations = translations
+        self.index_template = self.default_index_template
 
+    def lookup_controller_config(self, model_name):
+        if hasattr(self, model_name):
+            return getattr(self, model_name)(self.models[model_name], self.translations)
+        return self.DefaultControllerConfig(self.models[model_name], self.translations)
+    
 def old_crap():
 
     class GroupTable(TableBase):
