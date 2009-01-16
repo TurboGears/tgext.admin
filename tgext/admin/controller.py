@@ -3,7 +3,7 @@ from sqlalchemy.orm import class_mapper
 import inspect
 
 from tg.controllers import TGController, expose
-from tg.decorators import with_trailing_slash
+from tg.decorators import with_trailing_slash, override_template
 
 try:
     import tw.dojo
@@ -52,12 +52,7 @@ class AdminController(TGController):
         else:
             config = config_type(models, translations)
 
-        if config.index_template:
-            engines =  engines = self.index.decoration.engines
-            text_engine = engines.get('text/html')
-            template = config.index_template.split(':')
-            template.extend(text_engine[2:])
-            engines['text/html'] = template
+
         
         if config.allow_only:
             self.allow_only = config.allow_only
@@ -65,11 +60,20 @@ class AdminController(TGController):
         self.config = config
         self.session = session
         
+        self.default_index_template = ':'.join(self.index.decoration.engines.get('text/html')[:2])
+        if self.config.default_index_template:
+            self.default_index_template = self.config.default_index_template
+
     @with_trailing_slash
     @expose(engine+':tgext.admin.templates.index')
     def index(self):
-        return dict(page='index', models=[model.__name__ for model in self.config.models.values()])
- 
+        #overrides the template for this method
+        original_index_template = self.index.decoration.engines['text/html'] 
+        new_engine = self.default_index_template.split(':')
+        new_engine.extend(original_index_template[2:])
+        self.index.decoration.engines['text/html'] = new_engine
+        return dict(models=[model.__name__ for model in self.config.models.values()])
+
     def _make_controller(self, config, session):
         m = config.model
         class ModelController(CrudRestController):

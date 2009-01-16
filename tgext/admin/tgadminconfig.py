@@ -26,7 +26,7 @@ class UserControllerConfig(CrudRestControllerConfig):
     
         class Table(TableBase):
             __entity__ = self.model
-            __omit_fields__ = [user_id_field, '_password', password_field, 'lastName']
+            __omit_fields__ = [user_id_field, '_password', password_field]
             __url__ = '../users.json'
         self.table_type = Table
         
