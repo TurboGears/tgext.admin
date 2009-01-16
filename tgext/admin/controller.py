@@ -1,4 +1,7 @@
-"""Main Controller"""
+"""Admin Controller"""
+
+import inspect
+
 from tg.controllers import TGController, expose
 from tg.decorators import with_trailing_slash
 
@@ -13,7 +16,7 @@ except ImportError:
 Rum = None
 
 from tgext.crud import CrudRestController
-from tgext.admin.config import load_config
+from tgext.admin.config import AdminConfig, RestControllerConfig
 
 engine = 'genshi'
 try:
@@ -41,47 +44,32 @@ class AdminController(TGController):
     """
     allow_only = in_group('managers')
 
-    def __init__(self, session, model, config=None):
-        if config is None:
-            config = {}
-        if Catwalk is not None:
-            self.catwalk     = SecuredCatwalk(session)
-        if Rum is not None:
-            self.rum = Rum(model)
+    def _make_controller(self, config):
+        m = config.model
+        class ModelController(CrudRestController):
+            model        = m
+            table        = config.table
+            table_filler = config.table_filler
+            new_form     = config.new_form
+            edit_form    = config.edit_form
+            edit_filler  = config.edit_filler
+            allow_only   = config.allow_only
+        return ModelController(config.session)
 
-        config = load_config(session, model, config)
-
-        m=model
-        class UserController(CrudRestController):
-            model = m.User
-            table = config.user_table
-            table_filler = config.user_table_filler
-            new_form  = config.user_new_form
-            edit_form = config.user_edit_form
-            edit_filler = config.user_edit_filler
-
-        self.users       = UserController(session)
-
-        class GroupController(CrudRestController):
-            model = m.Group
-            table         = config.group_table
-            table_filler  = config.group_table_filler
-            new_form      = config.group_new_form
-            edit_form     = config.group_edit_form
-            edit_filler   = config.group_edit_filler
+    def __init__(self, models, sessions=None, translations=None, config_type=None):
+        if translations is None:
+            translations = {}
+        if config_type is None:
+            config = AdminConfig(models, sessions, translations)
+        else:
+            config = config_type(models, sessions, translations)
             
-        self.groups      = GroupController(session)
+        for model_name in config.keys():
+            model_config = config[model_name]
+            if isinstance(model_config, RestControllerConfig) and not hasattr(self, model_name):
+                crud_controller = self._make_controller(model_config)
+                setattr(self, model_config.model.__name__, crud_controller)
         
-        class PermissionController(CrudRestController):
-            model = m.Permission
-            table         = config.permission_table
-            table_filler  = config.permission_table_filler
-            new_form      = config.permission_new_form
-            edit_form     = config.permission_edit_form
-            edit_filler   = config.permission_edit_filler
-            
-        self.permissions      = PermissionController(session)
-
     @with_trailing_slash
     @expose(engine+':tgext.admin.templates.index')
     def index(self):
