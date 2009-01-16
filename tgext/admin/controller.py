@@ -16,7 +16,7 @@ except ImportError:
 Rum = None
 
 from tgext.crud import CrudRestController
-from tgext.admin.config import AdminConfig, RestControllerConfig
+from tgext.admin.tgadminconfig import TGAdminConfig
 
 engine = 'genshi'
 try:
@@ -44,24 +44,11 @@ class AdminController(TGController):
     """
     allow_only = in_group('managers')
 
-    def _make_controller(self, config, session):
-        m = config.model
-        class ModelController(CrudRestController):
-            model        = m
-            table        = config.table_type(session)
-            table_filler = config.table_filler_type(session)
-            new_form     = config.new_form_type(session)
-            new_filler   = config.new_filler_type(session)
-            edit_form    = config.edit_form_type(session)
-            edit_filler  = config.edit_filler_type(session)
-            allow_only   = config.allow_only
-        return ModelController(session)
-
     def __init__(self, models, session, translations=None, config_type=None):
         if translations is None:
             translations = {}
         if config_type is None:
-            config = AdminConfig(models, translations)
+            config = TGAdminConfig(models, translations)
         else:
             config = config_type(models, translations)
 
@@ -79,6 +66,19 @@ class AdminController(TGController):
     @expose(engine+':tgext.admin.templates.index')
     def index(self):
         return dict(page='index', models=self.config.models)
+ 
+    def _make_controller(self, config, session):
+        m = config.model
+        class ModelController(CrudRestController):
+            model        = m
+            table        = config.table_type(session)
+            table_filler = config.table_filler_type(session)
+            new_form     = config.new_form_type(session)
+            new_filler   = config.new_filler_type(session)
+            edit_form    = config.edit_form_type(session)
+            edit_filler  = config.edit_filler_type(session)
+            allow_only   = config.allow_only
+        return ModelController(session)
     
     @expose()
     def lookup(self, model_name, *args):
