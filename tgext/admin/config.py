@@ -64,6 +64,7 @@ class AdminConfig(object):
     DefaultControllerConfig    = RestControllerConfig
     
     default_index_template =  None
+    allow_only = None
     
     def __init__(self, models, translations=None):
 

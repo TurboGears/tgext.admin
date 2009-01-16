@@ -58,6 +58,9 @@ class AdminController(TGController):
             template = config.index_template.split(':')
             template.extend(text_engine[2:])
             engines['text/html'] = template
+        
+        if config.allow_only:
+            self.allow_only = config.allow_only
 
         self.config = config
         self.session = session
