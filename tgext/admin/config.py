@@ -108,11 +108,58 @@ class GroupControllerConfig(RestControllerConfig):
         group_id_field       = translations.get('group_id', 'group_id')
         group_name_field     = translations.get('group_name', 'group_name')
         
+        class GroupTable(TableBase):
+            __model__ = self.model
+            __limit_fields__ = [group_name_field, 'permissions']
+            __url__ = '../groups.json'
+        self.table_type = GroupTable
+    
+        class GroupTableFiller(TableFiller):
+            __model__ = self.model
+            __limit_fields__ = [group_id_field, group_name_field, 'permissions']
+        self.table_filler_type = GroupTableFiller
+    
+        class GroupNewForm(AddRecordForm):
+            __model__ = self.model
+            __limit_fields__ = [group_name_field, 'permissions']
+        self.new_form_type = GroupNewForm
+    
+        class GroupEditForm(EditableForm):
+            __model__ = self.model
+            __limit_fields__ = [group_id_field, 'group_name', 'permissions']
+        self.edit_form_type = GroupEditForm
+    
 class PermissionControllerConfig(RestControllerConfig):
     def _do_init_with_translations(self, translations):
         permission_id_field              = translations.get('permission_id', 'permission_id')
         permission_name_field            = translations.get('permission_name', 'permission_name')
         permission_description_field     = translations.get('permission_description', 'description')
+
+        class PermissionTable(TableBase):
+            __model__ = self.model
+            __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
+    
+            __url__ = '../permissions.json'
+        self.table_type = PermissionTable
+    
+        class PermissionTableFiller(TableFiller):
+            __model__ = self.model
+            __limit_fields__ = [permission_id_field, permission_name_field, permission_description_field, 'groups']
+        self.table_filler_type = PermissionTableFiller
+    
+        class PermissionNewForm(AddRecordForm):
+            __model__ = self.model
+            __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
+        self.new_form_type = PermissionNewForm
+    
+        class PermissionEditForm(EditableForm):
+            __model__ = self.model
+            __limit_fields__ = [permission_name_field, permission_description_field,'groups']
+        self.edit_form_type = PermissionEditForm
+    
+        class PermissionEditFiller(RecordFiller):
+            __model__ = self.model
+        self.edit_filler_type = PermissionEditFiller
 
 class AdminConfig(object):
     
@@ -126,7 +173,6 @@ class AdminConfig(object):
     
     def __init__(self, models, translations=None):
 
-        
         if translations is None:
             translations = {}
         
@@ -155,55 +201,6 @@ class AdminConfig(object):
     
 def old_crap():
 
-    class GroupTable(TableBase):
-        __model__ = m.Group
-        __limit_fields__ = [group_name_field, 'permissions']
-        __url__ = '../groups.json'
-    config.group_table = GroupTable(DBSession)
 
-    class GroupTableFiller(TableFiller):
-        __model__ = m.Group
-        __limit_fields__ = [group_id_field, group_name_field, 'permissions']
-    config.group_table_filler = GroupTableFiller(DBSession)
-
-    class GroupNewForm(AddRecordForm):
-        __model__ = m.Group
-        __limit_fields__ = [group_name_field, 'permissions']
-    config.group_new_form = GroupNewForm(DBSession)
-
-    class GroupEditForm(EditableForm):
-        __model__ = m.Group
-        __limit_fields__ = [group_id_field, 'group_name', 'permissions']
-    config.group_edit_form = GroupEditForm(DBSession)
-
-    class GroupEditFiller(RecordFiller):
-        __model__ = m.Group
-    config.group_edit_filler = GroupEditFiller(DBSession)
-
-    class PermissionTable(TableBase):
-        __model__ = m.Permission
-        __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
-
-        __url__ = '../permissions.json'
-    config.permission_table = PermissionTable(DBSession)
-
-    class PermissionTableFiller(TableFiller):
-        __model__ = m.Permission
-        __limit_fields__ = [permission_id_field, permission_name_field, permission_description_field, 'groups']
-    config.permission_table_filler = PermissionTableFiller(DBSession)
-
-    class PermissionNewForm(AddRecordForm):
-        __model__ = m.Permission
-        __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
-    config.permission_new_form = PermissionNewForm(DBSession)
-
-    class PermissionEditForm(EditableForm):
-        __model__ = m.Permission
-        __limit_fields__ = [permission_name_field, permission_description_field,'groups']
-    config.permission_edit_form = PermissionEditForm(DBSession)
-
-    class PermissionEditFiller(RecordFiller):
-        __model__ = m.Permission
-    config.permission_edit_filler = PermissionEditFiller(DBSession)
 
     return config
