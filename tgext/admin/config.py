@@ -13,8 +13,7 @@ except ImportError:
 from sprox.fillerbase import RecordFiller, AddFormFiller
 from sprox.formbase import AddRecordForm, EditableForm
 
-
-class RestControllerConfig(object):
+class CrudRestControllerConfig(object):
     allow_only        = None
 
     def _post_init(self):
@@ -49,7 +48,7 @@ class RestControllerConfig(object):
     
     
     def __init__(self, model, translations=None):
-        super(RestControllerConfig, self).__init__()
+        super(CrudRestControllerConfig, self).__init__()
         self.model = model
 
         self._do_init_with_translations(translations)
@@ -58,10 +57,11 @@ class RestControllerConfig(object):
 
     def _do_init_with_translations(self, translations):
         pass
-    
+
+
 class AdminConfig(object):
     
-    DefaultControllerConfig    = RestControllerConfig
+    DefaultControllerConfig    = CrudRestControllerConfig
     
     default_index_template =  None
     allow_only = None

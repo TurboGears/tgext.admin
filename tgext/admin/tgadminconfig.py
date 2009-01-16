@@ -2,7 +2,7 @@ import inspect
 from tw.forms import TextField
 from sqlalchemy.orm import class_mapper
 from sqlalchemy.orm.exc import UnmappedClassError
-from config import AdminConfig, RestControllerConfig
+from config import AdminConfig, CrudRestControllerConfig
 
 try:
     import tw.dojo
@@ -15,7 +15,7 @@ except ImportError:
 from sprox.fillerbase import RecordFiller, AddFormFiller
 from sprox.formbase import AddRecordForm, EditableForm
 
-class UserControllerConfig(RestControllerConfig):
+class UserControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
         
         user_id_field      = translations.get('user_id',       'user_id')
@@ -59,7 +59,7 @@ class UserControllerConfig(RestControllerConfig):
             setattr(NewForm, display_name_field, TextField)
         self.new_form_type = NewForm
     
-class GroupControllerConfig(RestControllerConfig):
+class GroupControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
         group_id_field       = translations.get('group_id', 'group_id')
         group_name_field     = translations.get('group_name', 'group_name')
@@ -85,7 +85,7 @@ class GroupControllerConfig(RestControllerConfig):
             __limit_fields__ = [group_id_field, 'group_name', 'permissions']
         self.edit_form_type = GroupEditForm
     
-class PermissionControllerConfig(RestControllerConfig):
+class PermissionControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
         permission_id_field              = translations.get('permission_id', 'permission_id')
         permission_name_field            = translations.get('permission_name', 'permission_name')
