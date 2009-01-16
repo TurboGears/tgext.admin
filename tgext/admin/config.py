@@ -82,7 +82,7 @@ class AdminConfig(object):
                 continue
             try:
                 mapper = class_mapper(model)
-                models[model.__name__] = model
+                models[model.__name__.lower()] = model
             except UnmappedClassError:
                 pass
         self.models = models
@@ -90,7 +90,8 @@ class AdminConfig(object):
         self.index_template = self.default_index_template
 
     def lookup_controller_config(self, model_name):
-        if hasattr(self, model_name):
-            return getattr(self, model_name)(self.models[model_name], self.translations)
+        model_name_lower = model_name.lower()
+        if hasattr(self, model_name_lower):
+            return getattr(self, model_name_lower)(self.models[model_name], self.translations)
         return self.DefaultControllerConfig(self.models[model_name], self.translations)
 

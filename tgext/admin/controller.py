@@ -68,7 +68,7 @@ class AdminController(TGController):
     @with_trailing_slash
     @expose(engine+':tgext.admin.templates.index')
     def index(self):
-        return dict(page='index', models=self.config.models)
+        return dict(page='index', models=[model.__name__ for model in self.config.models.values()])
  
     def _make_controller(self, config, session):
         m = config.model

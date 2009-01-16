@@ -118,7 +118,7 @@ class PermissionControllerConfig(CrudRestControllerConfig):
         self.edit_filler_type = PermissionEditFiller
 
 class TGAdminConfig(AdminConfig):
-    User       = UserControllerConfig
-    Group      = GroupControllerConfig
-    Permission = PermissionControllerConfig
+    user       = UserControllerConfig
+    group      = GroupControllerConfig
+    permission = PermissionControllerConfig
     

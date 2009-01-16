@@ -17,7 +17,7 @@
     This is a fully-configurable administrative tool to help you administer your website.
     
     <ul>
-      <li py:for="model in models"><a href='${model}/'>${model}s</a></li>
+      <li py:for="model in models"><a href='${model.lower()}/'>${model}s</a></li>
     </ul>
 </body>
 </html>
