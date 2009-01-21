@@ -5,14 +5,6 @@ import inspect
 from tg.controllers import TGController, expose
 from tg.decorators import with_trailing_slash, override_template
 
-try:
-    import tw.dojo
-    from catwalk.tg2.dojo_controller import DojoCatwalk as Catwalk
-except ImportError:
-    try:
-        from catwalk.tg2 import Catwalk
-    except:
-        Catwalk = None
 Rum = None
 
 from tgext.crud import CrudRestController
@@ -34,17 +26,13 @@ except ImportError:
 
 from repoze.what.predicates import in_group
 
-class SecuredCatwalk(Catwalk):
-    pass
-    allow_only = in_group('managers')
-    
 class AdminController(TGController):
     """
     A basic controller that handles User Groups and Permissions for a TG application.
     """
     allow_only = in_group('managers')
 
-    def __init__(self, models, session, translations=None, config_type=None):
+    def __init__(self, models, session, config_type=None, translations=None):
         if translations is None:
             translations = {}
         if config_type is None:

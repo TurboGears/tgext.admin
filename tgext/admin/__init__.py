@@ -1,2 +1,2 @@
 from controller import AdminController
-from config import AdminConfig
+from config import AdminConfig, CrudRestControllerConfig
