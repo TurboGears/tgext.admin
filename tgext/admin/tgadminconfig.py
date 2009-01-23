@@ -27,7 +27,7 @@ class UserControllerConfig(CrudRestControllerConfig):
         class Table(TableBase):
             __entity__ = self.model
             __omit_fields__ = [user_id_field, '_password', password_field]
-            __url__ = '../users.json'
+            __url__ = '../user.json'
         self.table_type = Table
         
         class MyTableFiller(TableFiller):
@@ -67,7 +67,7 @@ class GroupControllerConfig(CrudRestControllerConfig):
         class GroupTable(TableBase):
             __model__ = self.model
             __limit_fields__ = [group_name_field, 'permissions']
-            __url__ = '../groups.json'
+            __url__ = '../group.json'
         self.table_type = GroupTable
     
         class GroupTableFiller(TableFiller):
@@ -95,7 +95,7 @@ class PermissionControllerConfig(CrudRestControllerConfig):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
     
-            __url__ = '../permissions.json'
+            __url__ = '../permission.json'
         self.table_type = PermissionTable
     
         class PermissionTableFiller(TableFiller):
