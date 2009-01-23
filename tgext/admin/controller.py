@@ -4,6 +4,7 @@ import inspect
 
 from tg.controllers import TGController, expose
 from tg.decorators import with_trailing_slash, override_template
+from tg.exceptions import HTTPNotFound
 
 Rum = None
 
@@ -77,7 +78,10 @@ class AdminController(TGController):
     
     @expose()
     def lookup(self, model_name, *args):
-        model = self.config.models[model_name]
+        try:
+            model = self.config.models[model_name]
+        except KeyError:
+            raise HTTPNotFound().exception
         config = self.config.lookup_controller_config(model_name)
         controller = self._make_controller(config, self.session)
         return controller, args

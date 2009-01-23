@@ -215,18 +215,16 @@ classes. Here is an example of how to create an AdminConfig which limits the Use
     from sprox.tablebase import TableBase
     from sprox.fillerbase import TableFiller
 
-    class UserCrudConfig(CrudRestControllerConfig):
-        class table_type(TableBase):
-                __entity__ = User
-                __limit_fields__ = ['display_name', 'email_address']
-                __url__ = '../users.json' #this just tidies up the URL a bit
-                
-        class table_filler_type(TableFiller):
-                __entity__ = User
-                __limit_fields__ = ['user_id', 'display_name', 'email_address']
-    
     class MyAdminConfig(AdminConfig):
-        user = UserCrudConfig
+        class user(CrudRestControllerConfig):
+            class table_type(TableBase):
+                    __entity__ = User
+                    __limit_fields__ = ['display_name', 'email_address']
+                    __url__ = '../user.json' #this just tidies up the URL a bit
+                    
+            class table_filler_type(TableFiller):
+                    __entity__ = User
+                    __limit_fields__ = ['user_id', 'display_name', 'email_address']
         
     class RootController(BaseController):
         admin = AdminController(model, DBSession, config_type=MyAdminConfig)
