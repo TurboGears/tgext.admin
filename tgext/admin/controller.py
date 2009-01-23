@@ -15,7 +15,7 @@ engine = 'genshi'
 try:
     import chameleon.genshi
     import pylons.config
-    if hasattr(pylons.config, 'renderers') and 'chameleon_genshi' in pylons.config['renderers']:
+    if 'renderers' in pylons.config and 'chameleon_genshi' in pylons.config['renderers']:
         engine = 'chameleon_genshi'
     else:
         import warnings
