@@ -50,7 +50,6 @@ class CrudRestControllerConfig(object):
     def __init__(self, model, translations=None):
         super(CrudRestControllerConfig, self).__init__()
         self.model = model
-
         self._do_init_with_translations(translations)
             
         self._post_init()
@@ -65,7 +64,8 @@ class AdminConfig(object):
     
     default_index_template =  None
     allow_only = None
-    
+    include_left_menu = True
+
     def __init__(self, models, translations=None):
 
         if translations is None:

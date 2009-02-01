@@ -9,7 +9,7 @@ from tg.exceptions import HTTPNotFound
 Rum = None
 
 from tgext.crud import CrudRestController
-from tgext.admin.tgadminconfig import TGAdminConfig
+from config import AdminConfig
 
 engine = 'genshi'
 try:
@@ -17,11 +17,6 @@ try:
     import pylons.config
     if 'renderers' in pylons.config and 'chameleon_genshi' in pylons.config['renderers']:
         engine = 'chameleon_genshi'
-    else:
-        import warnings
-        #warnings.warn('The renderer for \'chameleon_genshi\' templates is missing.'\
-        #              'Your code could run much faster if you'\
-        #              'add the following line in you app_cfg.py: "base_config.renderers.append(\'chameleon_genshi\')"')
 except ImportError:
     pass
 
@@ -32,17 +27,15 @@ class AdminController(TGController):
     A basic controller that handles User Groups and Permissions for a TG application.
     """
     allow_only = in_group('managers')
-
+    
     def __init__(self, models, session, config_type=None, translations=None):
         if translations is None:
             translations = {}
         if config_type is None:
-            config = TGAdminConfig(models, translations)
+            config = AdminConfig(models, translations)
         else:
             config = config_type(models, translations)
 
-
-        
         if config.allow_only:
             self.allow_only = config.allow_only
 
@@ -74,7 +67,10 @@ class AdminController(TGController):
             edit_form    = config.edit_form_type(session)
             edit_filler  = config.edit_filler_type(session)
             allow_only   = config.allow_only
-        return ModelController(session)
+        menu_items = None
+        if self.config.include_left_menu:
+            menu_items = self.config.models
+        return ModelController(session, menu_items)
     
     @expose()
     def lookup(self, model_name, *args):
