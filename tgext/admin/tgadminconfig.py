@@ -8,12 +8,13 @@ try:
     import tw.dojo
     from sprox.dojo.tablebase import DojoTableBase as TableBase
     from sprox.dojo.fillerbase import DojoTableFiller as TableFiller
+    from sprox.dojo.formbase import DojoAddRecordForm as AddRecordForm, DojoEditableForm as EditableForm
 except ImportError:
     from sprox.tablebase import TableBase
     from sprox.fillerbase import TableFiller
+    from sprox.formbase import AddRecordForm, EditableForm
 
 from sprox.fillerbase import RecordFiller, AddFormFiller
-from sprox.formbase import AddRecordForm, EditableForm
 
 class UserControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
