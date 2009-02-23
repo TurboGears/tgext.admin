@@ -74,6 +74,7 @@ class AdminController(TGController):
     
     @expose()
     def lookup(self, model_name, *args):
+        model_name = model_name[:-1]
         try:
             model = self.config.models[model_name]
         except KeyError:

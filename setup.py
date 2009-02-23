@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.2'
+version = '0.2.2'
 
 setup(name='tgext.admin',
       version=version,
@@ -24,8 +24,7 @@ setup(name='tgext.admin',
       zip_safe=True,
       install_requires=[
           'setuptools',
-          'sprox',
-          'tgext.crud',
+          'tgext.crud>=0.2.1',
           # -*- Extra requirements: -*-
       ],
       entry_points="""
