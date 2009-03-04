@@ -95,7 +95,6 @@ class PermissionControllerConfig(CrudRestControllerConfig):
         class PermissionTable(TableBase):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
-    
             __url__ = '../permissions.json'
         self.table_type = PermissionTable
     

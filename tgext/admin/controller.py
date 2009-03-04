@@ -29,6 +29,7 @@ class AdminController(TGController):
     allow_only = in_group('managers')
     
     def __init__(self, models, session, config_type=None, translations=None):
+        super(AdminController, self).__init__()
         if translations is None:
             translations = {}
         if config_type is None:

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.2.2'
+version = '0.2.3'
 
 setup(name='tgext.admin',
       version=version,
