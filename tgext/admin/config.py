@@ -2,6 +2,7 @@ import inspect
 from tw.forms import TextField
 from sqlalchemy.orm import class_mapper
 from sqlalchemy.orm.exc import UnmappedClassError
+from tgext.crud import CrudRestController
 try:
     import tw.dojo
     from sprox.dojo.tablebase import DojoTableBase as TableBase
@@ -16,6 +17,7 @@ from sprox.fillerbase import RecordFiller, AddFormFiller
 
 class CrudRestControllerConfig(object):
     allow_only        = None
+    defaultCrudRestController = CrudRestController
 
     def _post_init(self):
         if not hasattr(self, 'table_type'):

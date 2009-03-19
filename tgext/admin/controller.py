@@ -59,7 +59,8 @@ class AdminController(TGController):
 
     def _make_controller(self, config, session):
         m = config.model
-        class ModelController(CrudRestController):
+        Controller = config.defaultCrudRestController
+        class ModelController(Controller):
             model        = m
             table        = config.table_type(session)
             table_filler = config.table_filler_type(session)
