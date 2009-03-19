@@ -87,26 +87,20 @@ class TestAdminController:
         assert 'Document' in resp, resp
 
     def test_list_documents(self):
-        resp = self.app.get('/admin/document').follow()
-        assert """<table dojoType="dojox.grid.DataGrid" id="" store="_store" columnReordering="true" rowsPerPage="20" delayScroll="true" class="">
-    <thead>
-            <tr>
-                <th field="__actions__">actions</th>
-                <th field="document_id" width="auto">document_id
-                </th><th field="created" width="auto">created
-                </th><th field="blob" width="auto">blob
-                </th><th field="owner" width="auto">owner
-                </th><th field="url" width="auto">url
-                </th><th field="address" width="auto">address
+        resp = self.app.get('/admin/documents').follow()
+        assert """<tr>
+                <th width="10em" name="actions" field="__actions__">__actions__
+                </th><th width="10em" name="document_id" field="document_id">document_id
+                </th><th width="10em" name="created" field="created">created
+                </th><th width="10em" name="blob" field="blob">blob
+                </th><th width="10em" name="owner" field="owner">owner
+                </th><th width="10em" name="url" field="url">url
+                </th><th width="10em" name="address" field="address">address
                 </th>
-            </tr>
-    </thead>
-    <div dojoType="dojox.data.QueryReadStore" jsId="_store" id="_store" url=".json"></div>
-</table>
-""" in resp, resp
+            </tr>""" in resp, resp
 
-    def test_documents_new(self):
-        resp = self.app.get('/admin/document/new')
+    def _test_documents_new(self):
+        resp = self.app.get('/admin/documents/new')
         assert """<tr id="blob.container" class="even" title="">
             <td class="labelcol">
                 <label id="blob.label" for="blob" class="fieldlabel">Blob</label>
@@ -117,35 +111,41 @@ class TestAdminController:
         </tr>""" in resp, resp
 
     def test_get_users(self):
-        resp = self.app.get('/admin/user/')
-        assert """<table dojoType="dojox.grid.DataGrid" id="" store="_store" columnReordering="true" rowsPerPage="20" delayScroll="true" class="">
-    <thead>
+        resp = self.app.get('/admin/users/')
+        assert """<thead>
             <tr>
-                <th field="__actions__">actions</th>
-                <th field="user_name" width="auto">user_name
-                </th><th field="email_address" width="auto">email_address
-                </th><th field="display_name" width="auto">display_name
-""" in resp, resp
+                <th width="10em" name="actions" field="__actions__">__actions__
+                </th><th width="10em" name="_password" field="_password">_password
+                </th><th width="10em" name="user_id" field="user_id">user_id
+                </th><th width="10em" name="user_name" field="user_name">user_name
+                </th><th width="10em" name="email_address" field="email_address">email_address
+                </th><th width="10em" name="display_name" field="display_name">display_name
+                </th><th width="10em" name="created" field="created">created
+                </th><th width="10em" name="town_id" field="town_id">town_id
+                </th><th width="10em" name="town" field="town">town
+                </th><th width="10em" name="password" field="password">password
+                </th><th width="10em" name="groups" field="groups">groups
+                </th>
+            </tr>
+    </thead>""" in resp, resp
 
     def test_get_users_json(self):
-        resp = self.app.get('/admin/user.json')
+        resp = self.app.get('/admin/users.json')
         assert """{"numRows": 1, "items": [{"town": "Arvada", "user_id": "1", "created":""" in resp, resp
 
     def test_edit_user(self):
-        resp = self.app.get('/admin/user/1/edit')
-        assert """<td class="fieldcol">
-                <input type="text" name="user_name" class="textfield required" id="user_name" value="asdf" />
-            </td>
-        </tr><tr id="email_address.container" class="odd" title="">
+        resp = self.app.get('/admin/users/1/edit')
+        assert """<tr id="_password.container" class="even" title="">
             <td class="labelcol">
-                <label id="email_address.label" for="email_address" class="fieldlabel required">Email Address</label>
+                <label id="_password.label" for="_password" class="fieldlabel">Password</label>
             </td>
             <td class="fieldcol">
-                <input type="text" name="email_address" class="textfield required" id="email_address" value="asdf@asdf.com" />
-            </td>""" in resp, resp
+                <input type="password" name="_password" class="passwordfield" id="_password" value="" />
+            </td>
+        </tr>""" in resp, resp
 
     def test_edit_user_success(self):
-        resp = self.app.post('/admin/user/1/', params={'sprox_id':'put__User',
+        resp = self.app.post('/admin/users/1/', params={'sprox_id':'put__User',
                                                          '_method':'PUT',
                                                                    'user_name':'someone',
                                                                    'display_name':'someone2',
@@ -159,7 +159,7 @@ class TestAdminController:
         #resp = self.app.get('/admin/user.json')
         #assert """"email_address": "asdf2@asdf2.com",""" in resp, resp
         
-        resp = self.app.post('/admin/user/1/', params={'sprox_id':'put__User',
+        resp = self.app.post('/admin/users/1/', params={'sprox_id':'put__User',
                                                          '_method':'PUT',
                                                                    'user_name':'someone',
                                                                    'display_name':'someone2',
@@ -173,8 +173,9 @@ class TestAdminController:
 #        resp = self.app.get('/admin/user.json')
 #        assert """"email_address": "asdf@asdf.com",""" in resp, resp
 
+    #this tests causes other tests to fail, so, no go
     def _test_add_and_remove_user(self):
-        resp = self.app.post('/admin/user/', params={'sprox_id':'add__User',
+        resp = self.app.post('/admin/users/', params={'sprox_id':'add__User',
                                                                    'user_name':'someone',
                                                                    'display_name':'someone2',
                                                                    'email_address':'asdf2@asdf2.com',
@@ -185,11 +186,11 @@ class TestAdminController:
                                                                    'user_id':'2',
                                                                    'created':'2009-01-11 13:54:01'}).follow()
         #assert '<td>asdf2@asdf2' in resp, resp
-        resp = self.app.get('/admin/user/2/', params={'user_id':'2', '_method':'DELETE'}).follow()
+        resp = self.app.get('/admin/users/2/', params={'user_id':'2', '_method':'DELETE'}).follow()
         #assert 'asdf2@asdf2' not in resp, resp
 
     def test_add_user_existing_username(self):
-        resp = self.app.post('/admin/user/create', params={'sprox_id':'add__User',
+        resp = self.app.post('/admin/users/create', params={'sprox_id':'add__User',
                                                                    'user_name':u'asdf',
                                                                    'display_name':'someone2',
                                                                    'email_address':'asdf2@asdf2.com',
