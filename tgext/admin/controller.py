@@ -2,8 +2,8 @@
 from sqlalchemy.orm import class_mapper
 import inspect
 
-from tg.controllers import TGController, expose
-from tg.decorators import with_trailing_slash, override_template
+from tg.controllers import TGController
+from tg.decorators import with_trailing_slash, override_template, expose
 from tg.exceptions import HTTPNotFound
 
 Rum = None
