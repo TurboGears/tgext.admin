@@ -1,4 +1,4 @@
-<%inherit file="local:templates.master"/>
+<%inherit file="app:templates.master"/>
 
 <%def name="title()">
 <title>Turbogears Administration System</title>
