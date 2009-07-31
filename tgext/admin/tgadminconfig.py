@@ -1,8 +1,26 @@
 import inspect
-from tw.forms import TextField
+from tg import expose, redirect
+from tw.forms import TextField, PasswordField
+from tgext.crud import CrudRestController
+from tgext.crud.decorators import registered_validate
 from sqlalchemy.orm import class_mapper
 from sqlalchemy.orm.exc import UnmappedClassError
 from config import AdminConfig, CrudRestControllerConfig
+from sprox.fillerbase import EditFormFiller
+
+from formencode import Schema
+from formencode.validators import FieldsMatch
+
+class PasswordFieldsMatch(FieldsMatch):
+    field_names = ['password', 'verify_password']
+    def validate_partial(self, field_dict, state):
+        #no password is set to change
+        if not field_dict.get('verify_password') and not field_dict.get('password'):
+            return
+        for name in self.field_names:
+            if not field_dict.has_key(name):
+                return
+        self.validate_python(field_dict, state)
 
 try:
     import tw.dojo
@@ -36,17 +54,35 @@ class UserControllerConfig(CrudRestControllerConfig):
             __omit_fields__ = ['_password', password_field]
         self.table_filler_type = MyTableFiller
 
+        edit_form_validator =  Schema(chained_validators=(FieldsMatch('password',
+                                                         'verify_password',
+                                                         messages={'invalidNoMatch':
+                                                         'Passwords do not match'}),))
+
         class EditForm(EditableForm):
             __entity__ = self.model
             __require_fields__     = [user_name_field, email_field]
-            __omit_fields__        = [password_field, 'created', '_password']
+            __omit_fields__        = ['created', '_password']
             __hidden_fields__      = [user_id_field]
-            __field_order__        = [user_name_field, email_field, display_name_field, 'groups']
+            __field_order__        = [user_id_field, user_name_field, email_field, display_name_field, 'password', 'verify_password', 'groups']
+            password = PasswordField('password', value='')
+            verify_password = PasswordField('verify_password')
+            __base_validator__ = edit_form_validator
+            
         if email_field is not None:
             setattr(EditForm, email_field, TextField)
         if display_name_field is not None:
             setattr(EditForm, display_name_field, TextField)
         self.edit_form_type = EditForm
+        
+        class UserEditFormFiller(EditFormFiller):
+            __entity__ = self.model
+            def get_value(self, *args, **kw):
+                v = super(UserEditFormFiller, self).get_value(*args, **kw)
+                del v['password']
+                return v
+        
+        self.edit_filler_type = UserEditFormFiller
     
         class NewForm(AddRecordForm):
             __entity__ = self.model
@@ -59,7 +95,29 @@ class UserControllerConfig(CrudRestControllerConfig):
         if display_name_field is not None:
             setattr(NewForm, display_name_field, TextField)
         self.new_form_type = NewForm
-    
+        
+    class defaultCrudRestController(CrudRestController):
+        
+        @expose('genshi:tgext.crud.templates.edit')
+        def edit(self, *args, **kw):
+            return CrudRestController.edit(self, *args, **kw)
+        
+        @expose()
+        @registered_validate(error_handler=edit)
+        def put(self, *args, **kw):
+            """update"""
+            if not kw['password']:
+                del kw['password']
+            pks = self.provider.get_primary_fields(self.model)
+            for i, pk in enumerate(pks):
+                if pk not in kw and i < len(args):
+                    kw[pk] = args[i]
+        
+            self.provider.update(self.model, params=kw)
+            redirect('../')
+        
+        
+
 class GroupControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
         group_id_field       = translations.get('group_id', 'group_id')
