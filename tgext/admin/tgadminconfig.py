@@ -7,8 +7,8 @@ from sqlalchemy.orm import class_mapper
 from sqlalchemy.orm.exc import UnmappedClassError
 from config import AdminConfig, CrudRestControllerConfig
 from sprox.fillerbase import EditFormFiller
+from sprox.formbase import FilteringSchema
 
-from formencode import Schema
 from formencode.validators import FieldsMatch
 
 class PasswordFieldsMatch(FieldsMatch):
@@ -54,7 +54,7 @@ class UserControllerConfig(CrudRestControllerConfig):
             __omit_fields__ = ['_password', password_field]
         self.table_filler_type = MyTableFiller
 
-        edit_form_validator =  Schema(chained_validators=(FieldsMatch('password',
+        edit_form_validator =  FilteringSchema(chained_validators=(FieldsMatch('password',
                                                          'verify_password',
                                                          messages={'invalidNoMatch':
                                                          'Passwords do not match'}),))
