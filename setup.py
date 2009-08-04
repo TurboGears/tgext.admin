@@ -24,6 +24,7 @@ setup(name='tgext.admin',
       zip_safe=True,
       install_requires=[
           'setuptools',
+          'sprox>=0.6.4',
           'tgext.crud>=0.2.4',
           # -*- Extra requirements: -*-
       ],
@@ -31,3 +32,4 @@ setup(name='tgext.admin',
       # -*- Entry points: -*-
       """,
       )
+
