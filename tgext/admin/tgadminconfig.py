@@ -43,58 +43,63 @@ class UserControllerConfig(CrudRestControllerConfig):
         password_field     = translations.get('password',      'password')
         display_name_field = translations.get('display_name',  'display_name')
     
-        class Table(TableBase):
-            __entity__ = self.model
-            __omit_fields__ = [user_id_field, '_password', password_field]
-            __url__ = '../users.json'
-        self.table_type = Table
-        
-        class MyTableFiller(TableFiller):
-            __entity__ = self.model
-            __omit_fields__ = ['_password', password_field]
-        self.table_filler_type = MyTableFiller
+        if not getattr(self, 'table_type', None):
+            class Table(TableBase):
+                __entity__ = self.model
+                __omit_fields__ = [user_id_field, '_password', password_field]
+                __url__ = '../users.json'
+            self.table_type = Table
+    
+        if not getattr(self, 'table_filler_type', None):
+            class MyTableFiller(TableFiller):
+                __entity__ = self.model
+                __omit_fields__ = ['_password', password_field]
+            self.table_filler_type = MyTableFiller
 
         edit_form_validator =  FilteringSchema(chained_validators=(FieldsMatch('password',
                                                          'verify_password',
                                                          messages={'invalidNoMatch':
                                                          'Passwords do not match'}),))
 
-        class EditForm(EditableForm):
-            __entity__ = self.model
-            __require_fields__     = [user_name_field, email_field]
-            __omit_fields__        = ['created', '_password']
-            __hidden_fields__      = [user_id_field]
-            __field_order__        = [user_id_field, user_name_field, email_field, display_name_field, 'password', 'verify_password', 'groups']
-            password = PasswordField('password', value='')
-            verify_password = PasswordField('verify_password')
-            __base_validator__ = edit_form_validator
+        if not getattr(self, 'edit_form_type', None):
+            class EditForm(EditableForm):
+                __entity__ = self.model
+                __require_fields__     = [user_name_field, email_field]
+                __omit_fields__        = ['created', '_password']
+                __hidden_fields__      = [user_id_field]
+                __field_order__        = [user_id_field, user_name_field, email_field, display_name_field, 'password', 'verify_password', 'groups']
+                password = PasswordField('password', value='')
+                verify_password = PasswordField('verify_password')
+                __base_validator__ = edit_form_validator
+                
+            if email_field is not None:
+                setattr(EditForm, email_field, TextField)
+            if display_name_field is not None:
+                setattr(EditForm, display_name_field, TextField)
+            self.edit_form_type = EditForm
+        
+        if not getattr(self, 'edit_filler_type', None):
+            class UserEditFormFiller(EditFormFiller):
+                __entity__ = self.model
+                def get_value(self, *args, **kw):
+                    v = super(UserEditFormFiller, self).get_value(*args, **kw)
+                    del v['password']
+                    return v
             
-        if email_field is not None:
-            setattr(EditForm, email_field, TextField)
-        if display_name_field is not None:
-            setattr(EditForm, display_name_field, TextField)
-        self.edit_form_type = EditForm
+            self.edit_filler_type = UserEditFormFiller
         
-        class UserEditFormFiller(EditFormFiller):
-            __entity__ = self.model
-            def get_value(self, *args, **kw):
-                v = super(UserEditFormFiller, self).get_value(*args, **kw)
-                del v['password']
-                return v
-        
-        self.edit_filler_type = UserEditFormFiller
-    
-        class NewForm(AddRecordForm):
-            __entity__ = self.model
-            __require_fields__     = [user_name_field, email_field]
-            __omit_fields__        = [password_field, 'created', '_password']
-            __hidden_fields__      = [user_id_field]
-            __field_order__        = [user_name_field, email_field, display_name_field, 'groups']
-        if email_field is not None:
-            setattr(NewForm, email_field, TextField)
-        if display_name_field is not None:
-            setattr(NewForm, display_name_field, TextField)
-        self.new_form_type = NewForm
+        if not getattr(self, 'new_form_type', None):
+            class NewForm(AddRecordForm):
+                __entity__ = self.model
+                __require_fields__     = [user_name_field, email_field]
+                __omit_fields__        = [password_field, 'created', '_password']
+                __hidden_fields__      = [user_id_field]
+                __field_order__        = [user_name_field, email_field, display_name_field, 'groups']
+            if email_field is not None:
+                setattr(NewForm, email_field, TextField)
+            if display_name_field is not None:
+                setattr(NewForm, display_name_field, TextField)
+            self.new_form_type = NewForm
         
     class defaultCrudRestController(CrudRestController):
         
