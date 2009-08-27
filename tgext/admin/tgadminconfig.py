@@ -8,8 +8,9 @@ from sqlalchemy.orm.exc import UnmappedClassError
 from config import AdminConfig, CrudRestControllerConfig
 from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FilteringSchema
-
 from formencode.validators import FieldsMatch
+
+dojo_loaded = False
 
 class PasswordFieldsMatch(FieldsMatch):
     field_names = ['password', 'verify_password']
@@ -24,18 +25,27 @@ class PasswordFieldsMatch(FieldsMatch):
 
 try:
     import tw.dojo
-    from sprox.dojo.tablebase import DojoTableBase as TableBase
-    from sprox.dojo.fillerbase import DojoTableFiller as TableFiller
-    from sprox.dojo.formbase import DojoAddRecordForm as AddRecordForm, DojoEditableForm as EditableForm
+    from sprox.dojo.tablebase import DojoTableBase
+    from sprox.dojo.fillerbase import DojoTableFiller
+    from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm
+    dojo_loaded = True
 except ImportError:
-    from sprox.tablebase import TableBase
-    from sprox.fillerbase import TableFiller
-    from sprox.formbase import AddRecordForm, EditableForm
+    pass
+
+from sprox.tablebase import TableBase
+from sprox.fillerbase import TableFiller
+from sprox.formbase import AddRecordForm, EditableForm
 
 from sprox.fillerbase import RecordFiller, AddFormFiller
 
 class UserControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
+        global TableBase, TableFiller, EditableForm, AddRecordForm
+        if self.default_to_dojo and dojo_loaded:
+            TableBase = DojoTableBase
+            TableFiller = DojoTableFiller
+            EditableForm = DojoEditableForm
+            AddRecordForm = DojoAddRecordForm
         
         user_id_field      = translations.get('user_id',       'user_id')
         user_name_field    = translations.get('user_name',     'user_name')
@@ -125,6 +135,13 @@ class UserControllerConfig(CrudRestControllerConfig):
 
 class GroupControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
+        global TableBase, TableFiller, EditableForm, AddRecordForm
+        if self.default_to_dojo and dojo_loaded:
+            TableBase = DojoTableBase
+            TableFiller = DojoTableFiller
+            EditableForm = DojoEditableForm
+            AddRecordForm = DojoAddRecordForm
+        
         group_id_field       = translations.get('group_id', 'group_id')
         group_name_field     = translations.get('group_name', 'group_name')
         
@@ -151,6 +168,13 @@ class GroupControllerConfig(CrudRestControllerConfig):
     
 class PermissionControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
+        global TableBase, TableFiller, EditableForm, AddRecordForm
+        if self.default_to_dojo and dojo_loaded:
+            TableBase = DojoTableBase
+            TableFiller = DojoTableFiller
+            EditableForm = DojoEditableForm
+            AddRecordForm = DojoAddRecordForm
+        
         permission_id_field              = translations.get('permission_id', 'permission_id')
         permission_name_field            = translations.get('permission_name', 'permission_name')
         permission_description_field     = translations.get('permission_description', 'description')

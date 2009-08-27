@@ -3,15 +3,18 @@ from tw.forms import TextField
 from sqlalchemy.orm import class_mapper
 from sqlalchemy.orm.exc import UnmappedClassError
 from tgext.crud import CrudRestController
+dojo_loaded = False
 try:
     import tw.dojo
-    from sprox.dojo.tablebase import DojoTableBase as TableBase
-    from sprox.dojo.fillerbase import DojoTableFiller as TableFiller
-    from sprox.dojo.formbase import DojoAddRecordForm as AddRecordForm, DojoEditableForm as EditableForm
+    from sprox.dojo.tablebase import DojoTableBase
+    from sprox.dojo.fillerbase import DojoTableFiller
+    from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm
+    dojo_loaded = True
 except ImportError:
-    from sprox.tablebase import TableBase
-    from sprox.fillerbase import TableFiller
-    from sprox.formbase import AddRecordForm, EditableForm
+    pass
+from sprox.tablebase import TableBase
+from sprox.fillerbase import TableFiller
+from sprox.formbase import AddRecordForm, EditableForm
 
 from sprox.fillerbase import RecordFiller, AddFormFiller
 
@@ -20,10 +23,17 @@ class CrudRestControllerConfig(object):
     defaultCrudRestController = CrudRestController
 
     def _post_init(self):
+        if self.default_to_dojo and dojo_loaded:
+            TableBase = DojoTableBase
+            TableFiller = DojoTableFiller
+            EditableForm = DojoEditableForm
+            AddRecordForm = DojoAddRecordForm
+
         if not hasattr(self, 'table_type'):
             class Table(TableBase):
                 __entity__=self.model
             self.table_type = Table
+
         if not hasattr(self, 'table_filler_type'):
             class MyTableFiller(TableFiller):
                 __entity__ = self.model
@@ -50,11 +60,11 @@ class CrudRestControllerConfig(object):
             self.new_filler_type = NewFiller
     
     
-    def __init__(self, model, translations=None):
+    def __init__(self, model, translations=None, default_to_dojo=True):
         super(CrudRestControllerConfig, self).__init__()
         self.model = model
+        self.default_to_dojo = default_to_dojo
         self._do_init_with_translations(translations)
-            
         self._post_init()
 
     def _do_init_with_translations(self, translations):
@@ -68,9 +78,10 @@ class AdminConfig(object):
     default_index_template =  None
     allow_only = None
     include_left_menu = True
+    default_to_dojo = True
 
     def __init__(self, models, translations=None):
-
+        
         if translations is None:
             translations = {}
         
@@ -95,6 +106,6 @@ class AdminConfig(object):
     def lookup_controller_config(self, model_name):
         model_name_lower = model_name.lower()
         if hasattr(self, model_name_lower):
-            return getattr(self, model_name_lower)(self.models[model_name], self.translations)
-        return self.DefaultControllerConfig(self.models[model_name], self.translations)
+            return getattr(self, model_name_lower)(self.models[model_name], self.translations, self.default_to_dojo)
+        return self.DefaultControllerConfig(self.models[model_name], self.translations, self.default_to_dojo)
 
