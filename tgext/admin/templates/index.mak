@@ -1,7 +1,7 @@
 <%inherit file="app:templates.master"/>
 
 <%def name="title()">
-<title>Turbogears Administration System</title>
+Turbogears Administration System
 </%def>
 
 <div style="height:0px;"> &nbsp; </div>
