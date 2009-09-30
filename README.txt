@@ -4,6 +4,10 @@ Introduction
 Changelog
 ===========
 
+0.3
+----
+Lookup now uses ProviderSelector, for better mongo support
+
 0.2.6
 -----
 Bugfix release.  Support for _method fields in TG2.1
