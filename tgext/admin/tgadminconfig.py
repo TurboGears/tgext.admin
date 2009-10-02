@@ -113,7 +113,7 @@ class UserControllerConfig(CrudRestControllerConfig):
         
     class defaultCrudRestController(CrudRestController):
         
-        @expose('genshi:tgext.crud.templates.edit')
+        @expose('tgext.crud.templates.edit')
         def edit(self, *args, **kw):
             return CrudRestController.edit(self, *args, **kw)
         
