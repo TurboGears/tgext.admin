@@ -1,0 +1,14 @@
+syntax:glob
+
+.coverage
+*.pyc
+*.bak
+*.db
+*.sw?
+*.orig
+build/*
+docs/.build/*
+dist/*
+.svn
+*.egg-info/*
+.noseids
