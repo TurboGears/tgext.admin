@@ -23,24 +23,35 @@ class CrudRestControllerConfig(object):
     defaultCrudRestController = CrudRestController
 
     def _post_init(self):
+        
+        #RecordFillerClass = type('RecordFillerClass', (RecordFiller,),{})
+        #AddFormFillerClass = type('AddFormFillerClass', (AddFormFiller,),{})
+       
+        #this insanity is caused by some weird python scoping.
+        # see previous changesets for first attempts
         if self.default_to_dojo and dojo_loaded:
-            TableBase = DojoTableBase
-            TableFiller = DojoTableFiller
-            EditableForm = DojoEditableForm
-            AddRecordForm = DojoAddRecordForm
-
+            TableBaseClass = type('TableBaseClass', (DojoTableBase,), {})
+            TableFillerClass = type('TableBaseClass', (DojoTableFiller,), {})
+            EditableFormClass = type('EditableFormClass', (DojoEditableForm,), {})
+            AddRecordFormClass = type('AddRecordFormClass', (DojoAddRecordForm,),{})
+        else: 
+            TableBaseClass = type('TableBaseClass', (TableBase,), {})
+            TableFillerClass = type('TableBaseClass', (TableFillerBase,), {})
+            EditableFormClass = type('EditableFormClass', (EditableForm,), {})
+            AddRecordFormClass = type('AddRecordFormClass', (AddRecordForm,),{})
+        
         if not hasattr(self, 'table_type'):
-            class Table(TableBase):
+            class Table(TableBaseClass):
                 __entity__=self.model
             self.table_type = Table
 
         if not hasattr(self, 'table_filler_type'):
-            class MyTableFiller(TableFiller):
+            class MyTableFiller(TableFillerClass):
                 __entity__ = self.model
             self.table_filler_type = MyTableFiller
         
         if not hasattr(self, 'edit_form_type'):
-            class EditForm(EditableForm):
+            class EditForm(EditableFormClass):
                 __entity__ = self.model
             self.edit_form_type = EditForm
         
@@ -50,7 +61,7 @@ class CrudRestControllerConfig(object):
             self.edit_filler_type = EditFiller
     
         if not hasattr(self, 'new_form_type'):
-            class NewForm(AddRecordForm):
+            class NewForm(AddRecordFormClass):
                 __entity__ = self.model
             self.new_form_type = NewForm
         
