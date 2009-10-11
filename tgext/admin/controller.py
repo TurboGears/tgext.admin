@@ -5,8 +5,7 @@ import inspect
 from tg.controllers import TGController
 from tg.decorators import with_trailing_slash, override_template, expose
 from tg.exceptions import HTTPNotFound
-
-Rum = None
+from tg import config as tg_config
 
 from tgext.crud import CrudRestController
 from config import AdminConfig
@@ -43,7 +42,7 @@ class AdminController(TGController):
         self.config = config
         self.session = session
         
-        self.default_index_template = ':'.join(self.index.decoration.engines.get('text/html')[:2])
+        self.default_index_template = ':'.join((tg_config.default_renderer, self.index.decoration.engines.get('text/html')[1]))
         if self.config.default_index_template:
             self.default_index_template = self.config.default_index_template
 

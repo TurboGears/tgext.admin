@@ -6,6 +6,7 @@ from tg.util import Bunch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+
 from tgext.admin.test.model import metadata, DBSession
 
 root = os.path.abspath(os.path.dirname(__file__))
@@ -24,6 +25,8 @@ base_config = TestConfig(folder = 'rendering',
                                    'session':tgext.admin.test.model.DBSession,
                                    'pylons.helpers': Bunch(),
                                    'use_legacy_renderer': False,
+                                   'renderers':['json', 'genshi', 'mako'],
+                                   'default_renderer':'genshi',
                                    # this is specific to mako
                                    # to make sure inheritance works
                                    'use_dotted_templatenames': True,
@@ -88,16 +91,18 @@ class TestAdminController:
 
     def test_list_documents(self):
         resp = self.app.get('/admin/documents').follow()
-        assert """<tr>
-                <th width="10em" name="actions" field="__actions__">__actions__
-                </th><th width="10em" name="document_id" field="document_id">document_id
-                </th><th width="10em" name="created" field="created">created
-                </th><th width="10em" name="blob" field="blob">blob
-                </th><th width="10em" name="owner" field="owner">owner
-                </th><th width="10em" name="url" field="url">url
-                </th><th width="10em" name="address" field="address">address
+        assert """<thead>
+            <tr>
+                <th formatter="lessThan" width="10em" name="actions" field="__actions__">__actions__
+                </th><th formatter="lessThan" width="10em" name="document_id" field="document_id">document_id
+                </th><th formatter="lessThan" width="10em" name="created" field="created">created
+                </th><th formatter="lessThan" width="10em" name="blob" field="blob">blob
+                </th><th formatter="lessThan" width="10em" name="owner" field="owner">owner
+                </th><th formatter="lessThan" width="10em" name="url" field="url">url
+                </th><th formatter="lessThan" width="10em" name="address" field="address">address
                 </th>
-            </tr>""" in resp, resp
+            </tr>
+        </thead>""" in resp, resp
 
     def _test_documents_new(self):
         resp = self.app.get('/admin/documents/new')
@@ -114,20 +119,20 @@ class TestAdminController:
         resp = self.app.get('/admin/users/')
         assert """<thead>
             <tr>
-                <th width="10em" name="actions" field="__actions__">__actions__
-                </th><th width="10em" name="_password" field="_password">_password
-                </th><th width="10em" name="user_id" field="user_id">user_id
-                </th><th width="10em" name="user_name" field="user_name">user_name
-                </th><th width="10em" name="email_address" field="email_address">email_address
-                </th><th width="10em" name="display_name" field="display_name">display_name
-                </th><th width="10em" name="created" field="created">created
-                </th><th width="10em" name="town_id" field="town_id">town_id
-                </th><th width="10em" name="town" field="town">town
-                </th><th width="10em" name="password" field="password">password
-                </th><th width="10em" name="groups" field="groups">groups
+                <th formatter="lessThan" width="10em" name="actions" field="__actions__">__actions__
+                </th><th formatter="lessThan" width="10em" name="_password" field="_password">_password
+                </th><th formatter="lessThan" width="10em" name="user_id" field="user_id">user_id
+                </th><th formatter="lessThan" width="10em" name="user_name" field="user_name">user_name
+                </th><th formatter="lessThan" width="10em" name="email_address" field="email_address">email_address
+                </th><th formatter="lessThan" width="10em" name="display_name" field="display_name">display_name
+                </th><th formatter="lessThan" width="10em" name="created" field="created">created
+                </th><th formatter="lessThan" width="10em" name="town_id" field="town_id">town_id
+                </th><th formatter="lessThan" width="10em" name="town" field="town">town
+                </th><th formatter="lessThan" width="10em" name="password" field="password">password
+                </th><th formatter="lessThan" width="10em" name="groups" field="groups">groups
                 </th>
             </tr>
-    </thead>""" in resp, resp
+        </thead>""" in resp, resp
 
     def test_get_users_json(self):
         resp = self.app.get('/admin/users.json')

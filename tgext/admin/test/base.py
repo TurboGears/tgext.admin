@@ -16,6 +16,8 @@ from pylons.testutil import ControllerWrap, SetupCacheGlobal
 
 from beaker.middleware import CacheMiddleware
 
+from pylons.configuration import response_defaults
+response_defaults['headers']['Content-Type'] = None
 
 data_dir = os.path.dirname(os.path.abspath(__file__))
 session_dir = os.path.join(data_dir, 'session')
@@ -51,7 +53,7 @@ def make_app(controller_klass=None, environ=None):
 
     if controller_klass is None:
         controller_klass = TGController
-
+        
     app = ControllerWrap(controller_klass)
     app = SetupCacheGlobal(app, environ, setup_cache=True, setup_session=True)
     app = RegistryManager(app)
