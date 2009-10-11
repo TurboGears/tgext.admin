@@ -36,7 +36,7 @@ class CrudRestControllerConfig(object):
             AddRecordFormClass = type('AddRecordFormClass', (DojoAddRecordForm,),{})
         else: 
             TableBaseClass = type('TableBaseClass', (TableBase,), {})
-            TableFillerClass = type('TableBaseClass', (TableFillerBase,), {})
+            TableFillerClass = type('TableBaseClass', (TableFiller,), {})
             EditableFormClass = type('EditableFormClass', (EditableForm,), {})
             AddRecordFormClass = type('AddRecordFormClass', (AddRecordForm,),{})
         
