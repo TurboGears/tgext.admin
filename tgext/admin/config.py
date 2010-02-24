@@ -23,23 +23,24 @@ class CrudRestControllerConfig(object):
     defaultCrudRestController = CrudRestController
 
     def _post_init(self):
-        
+
         #RecordFillerClass = type('RecordFillerClass', (RecordFiller,),{})
         #AddFormFillerClass = type('AddFormFillerClass', (AddFormFiller,),{})
-       
+
         #this insanity is caused by some weird python scoping.
         # see previous changesets for first attempts
         if self.default_to_dojo and dojo_loaded:
+            DojoTableBase.__retrieves_own_value__ = True
             TableBaseClass = type('TableBaseClass', (DojoTableBase,), {})
             TableFillerClass = type('TableBaseClass', (DojoTableFiller,), {})
             EditableFormClass = type('EditableFormClass', (DojoEditableForm,), {})
             AddRecordFormClass = type('AddRecordFormClass', (DojoAddRecordForm,),{})
-        else: 
+        else:
             TableBaseClass = type('TableBaseClass', (TableBase,), {})
             TableFillerClass = type('TableBaseClass', (TableFiller,), {})
             EditableFormClass = type('EditableFormClass', (EditableForm,), {})
             AddRecordFormClass = type('AddRecordFormClass', (AddRecordForm,),{})
-        
+
         if not hasattr(self, 'table_type'):
             class Table(TableBaseClass):
                 __entity__=self.model
@@ -49,28 +50,28 @@ class CrudRestControllerConfig(object):
             class MyTableFiller(TableFillerClass):
                 __entity__ = self.model
             self.table_filler_type = MyTableFiller
-        
+
         if not hasattr(self, 'edit_form_type'):
             class EditForm(EditableFormClass):
                 __entity__ = self.model
             self.edit_form_type = EditForm
-        
+
         if not hasattr(self, 'edit_filler_type'):
             class EditFiller(RecordFiller):
                 __entity__ = self.model
             self.edit_filler_type = EditFiller
-    
+
         if not hasattr(self, 'new_form_type'):
             class NewForm(AddRecordFormClass):
                 __entity__ = self.model
             self.new_form_type = NewForm
-        
+
         if not hasattr(self, 'new_filler_type'):
             class NewFiller(AddFormFiller):
                 __entity__ = self.model
             self.new_filler_type = NewFiller
-    
-    
+
+
     def __init__(self, model, translations=None, default_to_dojo=True):
         super(CrudRestControllerConfig, self).__init__()
         self.model = model
@@ -83,19 +84,19 @@ class CrudRestControllerConfig(object):
 
 
 class AdminConfig(object):
-    
+
     DefaultControllerConfig    = CrudRestControllerConfig
-    
+
     default_index_template =  None
     allow_only = None
     include_left_menu = True
     default_to_dojo = True
 
     def __init__(self, models, translations=None):
-        
+
         if translations is None:
             translations = {}
-        
+
         if inspect.ismodule(models):
             models = [getattr(models, model) for model in dir(models) if inspect.isclass(getattr(models, model))]
 

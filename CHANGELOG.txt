@@ -1,0 +1,3 @@
+0.3.8
+------
+Support for turning dojo off.
