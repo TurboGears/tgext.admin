@@ -5,18 +5,29 @@ from sqlalchemy.orm.exc import UnmappedClassError
 from tgext.crud import CrudRestController
 dojo_loaded = False
 try:
-    import tw.dojo
     from sprox.dojo.tablebase import DojoTableBase
     from sprox.dojo.fillerbase import DojoTableFiller
     from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm
     dojo_loaded = True
 except ImportError:
     pass
+
+try:
+    from sprox.jquery.tablebase import JQueryTableBase
+    from sprox.jquery.fillerbase import JQueryTableFiller
+#    from sprox.jquery.formbase import DojoAddRecordForm, DojoEditableForm
+    jquery_loaded = True
+except ImportError:
+    pass
+
+
+
 from sprox.tablebase import TableBase
 from sprox.fillerbase import TableFiller
 from sprox.formbase import AddRecordForm, EditableForm
-
 from sprox.fillerbase import RecordFiller, AddFormFiller
+
+from sprox.providerselector import ProviderTypeSelector, ProviderTypeSelectorError
 
 class CrudRestControllerConfig(object):
     allow_only        = None
@@ -30,6 +41,7 @@ class CrudRestControllerConfig(object):
         #this insanity is caused by some weird python scoping.
         # see previous changesets for first attempts
         if self.default_to_dojo and dojo_loaded:
+#            JQueryTableBase.__retrieves_own_value__ = True
             DojoTableBase.__retrieves_own_value__ = True
             TableBaseClass = type('TableBaseClass', (DojoTableBase,), {})
             TableFillerClass = type('TableBaseClass', (DojoTableFiller,), {})
@@ -82,6 +94,7 @@ class CrudRestControllerConfig(object):
     def _do_init_with_translations(self, translations):
         pass
 
+provider_type_selector = ProviderTypeSelector()
 
 class AdminConfig(object):
 
@@ -104,13 +117,12 @@ class AdminConfig(object):
         try_models = models
         models = {}
         for model in try_models:
-            if not inspect.isclass(model):
-                continue
             try:
-                mapper = class_mapper(model)
+                provider_type_selector.get_selector(model)
                 models[model.__name__.lower()] = model
-            except UnmappedClassError:
-                pass
+            except ProviderTypeSelectorError:
+                continue
+
         self.models = models
         self.translations = translations
         self.index_template = self.default_index_template
