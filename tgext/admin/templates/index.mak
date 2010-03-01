@@ -8,8 +8,16 @@ Turbogears Administration System
 <h2>TurboGears Admin</h2>
 This is a fully-configurable administrative tool to help you administer your website.
 
-<ul>
+<table class="admin_grid">
   % for model in models:
-      <li><a href='${model.lower()}s/'>${model}s</a></li>
+    <tr py:for="model in models">
+      <td>${model}s</td>
+      <td>
+        <a href='${model.lower()}s/new/' class="add_link">Add</a>
+      </td>
+      <td>
+        <a href='${model.lower()}s/' class="edit_link">Edit</a>
+      </td>
+    </tr>
   % endfor
-</ul>
+</table>
