@@ -53,7 +53,7 @@ class UserControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
         global TableBase, TableFiller, EditableForm, AddRecordForm
         if self.default_to_dojo and dojo_loaded:
-            TableBase = JQueryTableBase
+            TableBase = DojoTableBase
             TableFiller = DojoTableFiller
             EditableForm = DojoEditableForm
             AddRecordForm = DojoAddRecordForm
@@ -181,8 +181,8 @@ class PermissionControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
         global TableBase, TableFiller, EditableForm, AddRecordForm
         if self.default_to_dojo and dojo_loaded:
-            TableBase = JQueryTableBase
-            TableFiller = JQueryTableFiller
+            TableBase = DojoTableBase
+            TableFiller = DojoTableFiller
             EditableForm = DojoEditableForm
             AddRecordForm = DojoAddRecordForm
 
