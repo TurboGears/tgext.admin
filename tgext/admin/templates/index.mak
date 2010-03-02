@@ -1,4 +1,4 @@
-<%inherit file="app:templates.master"/>
+<%inherit file="local:templates.master"/>
 
 <%def name="title()">
 Turbogears Administration System
