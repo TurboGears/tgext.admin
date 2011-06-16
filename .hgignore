@@ -6,6 +6,7 @@ syntax:glob
 *.db
 *.sw?
 *.orig
+*.mak.py
 build/*
 docs/.build/*
 dist/*
