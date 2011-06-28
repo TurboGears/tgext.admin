@@ -42,7 +42,9 @@ class AdminController(TGController):
         self.config = config
         self.session = session
 
-        self.default_index_template = ':'.join((tg_config.default_renderer, self.index.decoration.engines.get('text/html')[1]))
+        default_renderer = getattr(tg_config,'default_renderer', 'genshi')
+        
+        self.default_index_template = ':'.join((default_renderer, self.index.decoration.engines.get('text/html')[1]))
         if self.config.default_index_template:
             self.default_index_template = self.config.default_index_template
 
