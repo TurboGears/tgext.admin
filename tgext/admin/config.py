@@ -1,7 +1,12 @@
 import inspect
 from tw.forms import TextField
-from sqlalchemy.orm import class_mapper
-from sqlalchemy.orm.exc import UnmappedClassError
+
+try:
+    from sqlalchemy.orm import class_mapper
+    from sqlalchemy.orm.exc import UnmappedClassError
+except ImportError:
+    pass
+
 from tgext.crud import CrudRestController
 dojo_loaded = False
 try:

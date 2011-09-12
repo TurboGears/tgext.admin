@@ -1,5 +1,4 @@
 """Admin Controller"""
-from sqlalchemy.orm import class_mapper
 import inspect
 
 from tg.controllers import TGController
