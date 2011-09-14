@@ -3,8 +3,6 @@ from tg import expose, redirect
 from tw.forms import TextField, PasswordField
 from tgext.crud import CrudRestController
 from tgext.crud.decorators import registered_validate
-from sqlalchemy.orm import class_mapper
-from sqlalchemy.orm.exc import UnmappedClassError
 from config import AdminConfig, CrudRestControllerConfig
 from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FilteringSchema
@@ -67,7 +65,7 @@ class UserControllerConfig(CrudRestControllerConfig):
         if not getattr(self, 'table_type', None):
             class Table(TableBase):
                 __entity__ = self.model
-                __omit_fields__ = [user_id_field, '_password', password_field]
+                __omit_fields__ = [user_id_field, '_groups', '_password', password_field]
                 __url__ = '../users.json'
             self.table_type = Table
 
@@ -86,7 +84,7 @@ class UserControllerConfig(CrudRestControllerConfig):
             class EditForm(EditableForm):
                 __entity__ = self.model
                 __require_fields__     = [user_name_field, email_field]
-                __omit_fields__        = ['created', '_password']
+                __omit_fields__        = ['created', '_password', '_groups']
                 __hidden_fields__      = [user_id_field]
                 __field_order__        = [user_id_field, user_name_field, email_field, display_name_field, 'password', 'verify_password', 'groups']
                 password = PasswordField('password', value='')
@@ -113,7 +111,7 @@ class UserControllerConfig(CrudRestControllerConfig):
             class NewForm(AddRecordForm):
                 __entity__ = self.model
                 __require_fields__     = [user_name_field, email_field]
-                __omit_fields__        = [password_field, 'created', '_password']
+                __omit_fields__        = [password_field, 'created', '_password', '_groups']
                 __hidden_fields__      = [user_id_field]
                 __field_order__        = [user_name_field, email_field, display_name_field, 'groups']
             if email_field is not None:
@@ -170,11 +168,13 @@ class GroupControllerConfig(CrudRestControllerConfig):
         class GroupNewForm(AddRecordForm):
             __model__ = self.model
             __limit_fields__ = [group_name_field, 'permissions']
+            __field_order__ = [group_name_field, 'permissions']
         self.new_form_type = GroupNewForm
 
         class GroupEditForm(EditableForm):
             __model__ = self.model
-            __limit_fields__ = [group_id_field, 'group_name', 'permissions']
+            __limit_fields__ = [group_id_field, group_name_field, 'permissions']
+            __field_order__ = [group_id_field, group_name_field, 'permissions']
         self.edit_form_type = GroupEditForm
 
 class PermissionControllerConfig(CrudRestControllerConfig):
