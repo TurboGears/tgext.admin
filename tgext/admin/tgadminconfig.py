@@ -216,6 +216,8 @@ class PermissionControllerConfig(CrudRestControllerConfig):
         self.edit_filler_type = PermissionEditFiller
 
 class TGAdminConfig(AdminConfig):
+    default_to_dojo = False
+
     user       = UserControllerConfig
     group      = GroupControllerConfig
     permission = PermissionControllerConfig
