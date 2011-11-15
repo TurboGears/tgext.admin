@@ -47,6 +47,8 @@ class AdminController(TGController):
         if self.config.default_index_template:
             self.default_index_template = self.config.default_index_template
 
+        self.controllers_cache = {}
+
     @with_trailing_slash
     @expose('tgext.admin.templates.index')
     def index(self):
@@ -81,8 +83,13 @@ class AdminController(TGController):
             model = self.config.models[model_name]
         except KeyError:
             raise HTTPNotFound().exception
-        config = self.config.lookup_controller_config(model_name)
-        controller = self._make_controller(config, self.session)
+
+        try:
+            controller = self.controllers_cache[model_name]
+        except KeyError:
+            config = self.config.lookup_controller_config(model_name)
+            controller = self.controllers_cache[model_name] = self._make_controller(config, self.session)
+
         return controller, args
 
     @expose()
