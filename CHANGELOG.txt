@@ -1,3 +1,7 @@
+0.4 (1/31/2012)
+---------------
+Ming (Mongodb) support.
+
 0.3.8
 ------
 Support for turning dojo off.
