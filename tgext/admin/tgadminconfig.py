@@ -41,7 +41,11 @@ except ImportError:
 
 
 
-from sprox.tablebase import TableBase
+try:
+    from tgext.crud.utils import SortableTableBase as TableBase
+except:
+    from sprox.tablebase import TableBase
+
 from sprox.fillerbase import TableFiller
 from sprox.formbase import AddRecordForm, EditableForm
 
