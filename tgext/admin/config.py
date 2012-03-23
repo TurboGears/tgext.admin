@@ -1,5 +1,4 @@
 import inspect
-from tw.forms import TextField
 
 try:
     from sqlalchemy.orm import class_mapper
@@ -8,24 +7,6 @@ except ImportError:
     pass
 
 from tgext.crud import CrudRestController
-dojo_loaded = False
-try:
-    from sprox.dojo.tablebase import DojoTableBase
-    from sprox.dojo.fillerbase import DojoTableFiller
-    from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm
-    dojo_loaded = True
-except ImportError:
-    pass
-
-try:
-    from sprox.jquery.tablebase import JQueryTableBase
-    from sprox.jquery.fillerbase import JQueryTableFiller
-#    from sprox.jquery.formbase import DojoAddRecordForm, DojoEditableForm
-    jquery_loaded = True
-except ImportError:
-    pass
-
-
 
 from sprox.tablebase import TableBase
 from sprox.fillerbase import TableFiller
@@ -45,18 +26,10 @@ class CrudRestControllerConfig(object):
 
         #this insanity is caused by some weird python scoping.
         # see previous changesets for first attempts
-        if self.default_to_dojo and dojo_loaded:
-#            JQueryTableBase.__retrieves_own_value__ = True
-            DojoTableBase.__retrieves_own_value__ = True
-            TableBaseClass = type('TableBaseClass', (DojoTableBase,), {})
-            TableFillerClass = type('TableBaseClass', (DojoTableFiller,), {})
-            EditableFormClass = type('EditableFormClass', (DojoEditableForm,), {})
-            AddRecordFormClass = type('AddRecordFormClass', (DojoAddRecordForm,),{})
-        else:
-            TableBaseClass = type('TableBaseClass', (TableBase,), {})
-            TableFillerClass = type('TableBaseClass', (TableFiller,), {})
-            EditableFormClass = type('EditableFormClass', (EditableForm,), {})
-            AddRecordFormClass = type('AddRecordFormClass', (AddRecordForm,),{})
+        TableBaseClass = type('TableBaseClass', (TableBase,), {})
+        TableFillerClass = type('TableBaseClass', (TableFiller,), {})
+        EditableFormClass = type('EditableFormClass', (EditableForm,), {})
+        AddRecordFormClass = type('AddRecordFormClass', (AddRecordForm,),{})
 
         if not hasattr(self, 'table_type'):
             class Table(TableBaseClass):

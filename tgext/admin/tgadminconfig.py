@@ -1,6 +1,4 @@
-import inspect
 from tg import expose, redirect
-from tw.forms import TextField, PasswordField
 from tgext.crud import CrudRestController
 from tgext.crud.decorators import registered_validate
 from config import AdminConfig, CrudRestControllerConfig
@@ -8,38 +6,10 @@ from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FilteringSchema
 from formencode.validators import FieldsMatch
 
-dojo_loaded = False
-
-class PasswordFieldsMatch(FieldsMatch):
-    field_names = ['password', 'verify_password']
-    def validate_partial(self, field_dict, state):
-        #no password is set to change
-        if not field_dict.get('verify_password') and not field_dict.get('password'):
-            return
-        for name in self.field_names:
-            if not field_dict.has_key(name):
-                return
-        self.validate_python(field_dict, state)
-
 try:
-    import tw.dojo
-    from sprox.dojo.tablebase import DojoTableBase
-    from sprox.dojo.fillerbase import DojoTableFiller
-    from sprox.dojo.formbase import DojoAddRecordForm, DojoEditableForm
-    dojo_loaded = True
-except ImportError:
-    pass
-
-try:
-    import tw.jquery
-    from sprox.jquery.tablebase import JQueryTableBase
-    from sprox.jquery.fillerbase import JQueryTableFiller
-#    from sprox.jquery.formbase import DojoAddRecordForm, DojoEditableForm
-    jquery_loaded = True
-except ImportError:
-    pass
-
-
+    from tw2.forms import TextField, PasswordField
+except:
+    from tw.forms import TextField, PasswordField
 
 try:
     from tgext.crud.utils import SortableTableBase as TableBase
@@ -53,13 +23,6 @@ from sprox.fillerbase import RecordFiller, AddFormFiller
 
 class UserControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
-        global TableBase, TableFiller, EditableForm, AddRecordForm
-        if self.default_to_dojo and dojo_loaded:
-            TableBase = DojoTableBase
-            TableFiller = DojoTableFiller
-            EditableForm = DojoEditableForm
-            AddRecordForm = DojoAddRecordForm
-
         user_id_field      = translations.get('user_id',       'user_id')
         user_name_field    = translations.get('user_name',     'user_name')
         email_field        = translations.get('email_address', 'email_address')
@@ -79,10 +42,14 @@ class UserControllerConfig(CrudRestControllerConfig):
                 __omit_fields__ = ['_password', password_field]
             self.table_filler_type = MyTableFiller
 
-        edit_form_validator =  FilteringSchema(chained_validators=(FieldsMatch('password',
-                                                         'verify_password',
-                                                         messages={'invalidNoMatch':
-                                                         'Passwords do not match'}),))
+        if hasattr(TextField, 'req'):
+            edit_form_validator = FieldsMatch('password', 'verify_password',
+                                              messages={'invalidNoMatch': 'Passwords do not match'})
+        else:
+            edit_form_validator =  FilteringSchema(chained_validators=[FieldsMatch('password',
+                                                             'verify_password',
+                                                             messages={'invalidNoMatch':
+                                                             'Passwords do not match'})])
 
         if not getattr(self, 'edit_form_type', None):
             class EditForm(EditableForm):
@@ -134,8 +101,9 @@ class UserControllerConfig(CrudRestControllerConfig):
         @registered_validate(error_handler=edit)
         def put(self, *args, **kw):
             """update"""
-            if not kw['password']:
+            if 'password' in kw and not kw['password']:
                 del kw['password']
+
             pks = self.provider.get_primary_fields(self.model)
             for i, pk in enumerate(pks):
                 if pk not in kw and i < len(args):
@@ -148,13 +116,6 @@ class UserControllerConfig(CrudRestControllerConfig):
 
 class GroupControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
-        global TableBase, TableFiller, EditableForm, AddRecordForm
-        if self.default_to_dojo and dojo_loaded:
-            TableBase = DojoTableBase
-            TableFiller = DojoTableFiller
-            EditableForm = DojoEditableForm
-            AddRecordForm = DojoAddRecordForm
-
         group_id_field       = translations.get('group_id', 'group_id')
         group_name_field     = translations.get('group_name', 'group_name')
 
@@ -183,13 +144,6 @@ class GroupControllerConfig(CrudRestControllerConfig):
 
 class PermissionControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
-        global TableBase, TableFiller, EditableForm, AddRecordForm
-        if self.default_to_dojo and dojo_loaded:
-            TableBase = DojoTableBase
-            TableFiller = DojoTableFiller
-            EditableForm = DojoEditableForm
-            AddRecordForm = DojoAddRecordForm
-
         permission_id_field              = translations.get('permission_id', 'permission_id')
         permission_name_field            = translations.get('permission_name', 'permission_name')
         permission_description_field     = translations.get('permission_description', 'description')
