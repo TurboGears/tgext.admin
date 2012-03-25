@@ -8,16 +8,6 @@ from tg import config as tg_config
 
 from tgext.crud import CrudRestController
 from config import AdminConfig
-
-engine = 'genshi'
-try:
-    import chameleon.genshi
-    import pylons.config
-    if 'renderers' in pylons.config and 'chameleon_genshi' in pylons.config['renderers']:
-        engine = 'chameleon_genshi'
-except ImportError:
-    pass
-
 from repoze.what.predicates import in_group
 
 class AdminController(TGController):
