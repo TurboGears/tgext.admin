@@ -1,5 +1,6 @@
 """Admin Controller"""
-import inspect
+import logging
+log = logging.getLogger('tgext.admin')
 
 from tg.controllers import TGController
 from tg.decorators import with_trailing_slash, override_template, expose
@@ -30,18 +31,35 @@ class AdminController(TGController):
 
         self.config = config
         self.session = session
+        self.missing_template = False
 
-        default_renderer = getattr(tg_config,'default_renderer', 'genshi')
-        
-        self.default_index_template = ':'.join((default_renderer, self.index.decoration.engines.get('text/html')[1]))
         if self.config.default_index_template:
             self.default_index_template = self.config.default_index_template
+            self.custom_template = True
+        else:
+            default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
+            if default_renderer not in ['genshi', 'mako']:
+                if 'genshi' in tg_config.renderers:
+                    default_renderer = 'genshi'
+                elif 'mako' in tg_config.renderers:
+                    default_renderer = 'mako'
+                else:
+                    log.warn('TurboGears admin supports only Genshi ad Mako, please make sure you add at \
+    least one of those to your config/app_cfg.py base_config.renderers list.')
+                    self.missing_template = True
+
+            self.default_index_template = ':'.join((default_renderer,
+                                                    self.index.decoration.engines.get('text/html')[1]))
 
         self.controllers_cache = {}
 
     @with_trailing_slash
     @expose('tgext.admin.templates.index')
     def index(self):
+        if self.missing_template:
+            raise Exception('TurboGears admin supports only Genshi ad Mako, please make sure you add at \
+    least one of those to your config/app_cfg.py base_config.renderers list.')
+
         #overrides the template for this method
         original_index_template = self.index.decoration.engines['text/html']
         new_engine = self.default_index_template.split(':')
