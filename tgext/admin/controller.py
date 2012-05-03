@@ -9,7 +9,11 @@ from tg import config as tg_config
 
 from tgext.crud import CrudRestController
 from config import AdminConfig
-from repoze.what.predicates import in_group
+
+try:
+    from tg.predicates import in_group
+except ImportError:
+    from repoze.what.predicates import in_group
 
 class AdminController(TGController):
     """
