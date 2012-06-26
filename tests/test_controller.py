@@ -71,16 +71,23 @@ class TestAdminController:
     def test_list_documents(self):
         resp = self.app.get('/admin/documents').follow()
         assert """<thead>
-            <tr>
-                <th formatter="lessThan" width="10em" name="actions" field="__actions__">__actions__
-                </th><th formatter="lessThan" width="10em" name="document_id" field="document_id">document_id
-                </th><th formatter="lessThan" width="10em" name="created" field="created">created
-                </th><th formatter="lessThan" width="10em" name="blob" field="blob">blob
-                </th><th formatter="lessThan" width="10em" name="owner" field="owner">owner
-                </th><th formatter="lessThan" width="10em" name="url" field="url">url
-                </th><th formatter="lessThan" width="10em" name="address" field="address">address
-                </th>
-            </tr>
+        <tr>
+            <th class="col_0">
+                actions
+            </th><th class="col_1">
+                <a href="http://localhost/admin/documents/?order_by=document_id">document_id</a>
+            </th><th class="col_2">
+                <a href="http://localhost/admin/documents/?order_by=created">created</a>
+            </th><th class="col_3">
+                <a href="http://localhost/admin/documents/?order_by=blob">blob</a>
+            </th><th class="col_4">
+                <a href="http://localhost/admin/documents/?order_by=owner">owner</a>
+            </th><th class="col_5">
+                <a href="http://localhost/admin/documents/?order_by=url">url</a>
+            </th><th class="col_6">
+                <a href="http://localhost/admin/documents/?order_by=address">address</a>
+            </th>
+        </tr>
         </thead>""" in resp, resp
 
     def _test_documents_new(self):
@@ -97,20 +104,31 @@ class TestAdminController:
     def test_get_users(self):
         resp = self.app.get('/admin/users/')
         assert """<thead>
-            <tr>
-                <th formatter="lessThan" width="10em" name="actions" field="__actions__">__actions__
-                </th><th formatter="lessThan" width="10em" name="_password" field="_password">_password
-                </th><th formatter="lessThan" width="10em" name="user_id" field="user_id">user_id
-                </th><th formatter="lessThan" width="10em" name="user_name" field="user_name">user_name
-                </th><th formatter="lessThan" width="10em" name="email_address" field="email_address">email_address
-                </th><th formatter="lessThan" width="10em" name="display_name" field="display_name">display_name
-                </th><th formatter="lessThan" width="10em" name="created" field="created">created
-                </th><th formatter="lessThan" width="10em" name="town_id" field="town_id">town_id
-                </th><th formatter="lessThan" width="10em" name="town" field="town">town
-                </th><th formatter="lessThan" width="10em" name="password" field="password">password
-                </th><th formatter="lessThan" width="10em" name="groups" field="groups">groups
-                </th>
-            </tr>
+        <tr>
+            <th class="col_0">
+                actions
+            </th><th class="col_1">
+                <a href="http://localhost/admin/users/?order_by=_password">_password</a>
+            </th><th class="col_2">
+                <a href="http://localhost/admin/users/?order_by=user_id">user_id</a>
+            </th><th class="col_3">
+                <a href="http://localhost/admin/users/?order_by=user_name">user_name</a>
+            </th><th class="col_4">
+                <a href="http://localhost/admin/users/?order_by=email_address">email_address</a>
+            </th><th class="col_5">
+                <a href="http://localhost/admin/users/?order_by=display_name">display_name</a>
+            </th><th class="col_6">
+                <a href="http://localhost/admin/users/?order_by=created">created</a>
+            </th><th class="col_7">
+                <a href="http://localhost/admin/users/?order_by=town_id">town_id</a>
+            </th><th class="col_8">
+                town
+            </th><th class="col_9">
+                <a href="http://localhost/admin/users/?order_by=password">password</a>
+            </th><th class="col_10">
+                groups
+            </th>
+        </tr>
         </thead>""" in resp, resp
 
 
@@ -122,14 +140,13 @@ class TestAdminController:
 
     def test_edit_user(self):
         resp = self.app.get('/admin/users/1/edit')
-        assert """<tr id="_password.container" class="even" title="">
-            <td class="labelcol">
-                <label id="_password.label" for="_password" class="fieldlabel">Password</label>
-            </td>
-            <td class="fieldcol">
-                <input type="password" name="_password" class="passwordfield" id="_password" value="" />
-            </td>
-        </tr>""" in resp, resp
+        assert """<tr class="odd" id="sx__password:container">
+        <th>Password</th>
+        <td>
+            <input name="_password" type="password" id="sx__password" />
+            <span id="sx__password:error"></span>
+        </td>
+    </tr>""" in resp, resp
 
     def test_edit_user_success(self):
         resp = self.app.post('/admin/users/1/', params={'sprox_id':'put__User',
