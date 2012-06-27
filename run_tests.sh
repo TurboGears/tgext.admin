@@ -1,1 +1,0 @@
-nosetests tgext/admin/test/
