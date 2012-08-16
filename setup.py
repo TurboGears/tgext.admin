@@ -30,7 +30,7 @@ setup(name='tgext.admin',
       zip_safe=True,
       install_requires=[
           'setuptools',
-          'tgext.crud>=0.5.1',
+          'tgext.crud>=0.5.2',
           # -*- Extra requirements: -*-
       ],
       entry_points="""

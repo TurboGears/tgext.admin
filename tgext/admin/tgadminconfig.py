@@ -1,14 +1,15 @@
 from tg import expose, redirect
 from tgext.crud import CrudRestController
+from tgext.crud.utils import sprox_with_tw2
 from tgext.crud.decorators import registered_validate
 from config import AdminConfig, CrudRestControllerConfig
 from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FilteringSchema
 from formencode.validators import FieldsMatch
 
-try:
+if sprox_with_tw2():
     from tw2.forms import TextField, PasswordField
-except:
+else:
     from tw.forms import TextField, PasswordField
 
 try:
