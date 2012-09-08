@@ -17,7 +17,11 @@ try:
 except:
     from sprox.tablebase import TableBase
 
-from sprox.fillerbase import TableFiller
+try:
+    from tgext.crud.utils import RequestLocalTableFiller as TableFiller
+except:
+    from sprox.fillerbase import TableFiller
+
 from sprox.formbase import AddRecordForm, EditableForm
 
 from sprox.fillerbase import RecordFiller, AddFormFiller
