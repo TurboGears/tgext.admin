@@ -42,7 +42,7 @@ class AdminController(TGController):
             self.custom_template = True
         else:
             default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
-            if default_renderer not in ['genshi', 'mako']:
+            if default_renderer not in ['genshi', 'mako', 'jinja']:
                 if 'genshi' in tg_config.renderers:
                     default_renderer = 'genshi'
                 elif 'mako' in tg_config.renderers:
