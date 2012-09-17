@@ -47,8 +47,10 @@ class AdminController(TGController):
                     default_renderer = 'genshi'
                 elif 'mako' in tg_config.renderers:
                     default_renderer = 'mako'
+                elif 'jinja' in tg_config.renderers:
+                    default_renderer = 'jinja'
                 else:
-                    log.warn('TurboGears admin supports only Genshi ad Mako, please make sure you add at \
+                    log.warn('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
     least one of those to your config/app_cfg.py base_config.renderers list.')
                     self.missing_template = True
 
@@ -61,7 +63,7 @@ class AdminController(TGController):
     @expose('tgext.admin.templates.index')
     def index(self):
         if self.missing_template:
-            raise Exception('TurboGears admin supports only Genshi ad Mako, please make sure you add at \
+            raise Exception('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
     least one of those to your config/app_cfg.py base_config.renderers list.')
 
         #overrides the template for this method
