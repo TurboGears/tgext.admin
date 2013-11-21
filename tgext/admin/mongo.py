@@ -1,7 +1,7 @@
-from config import AdminConfig
-from controller import AdminController
+from .config import AdminConfig
+from .controller import AdminController
 import inspect
-from tgadminconfig import UserControllerConfig, GroupControllerConfig, PermissionControllerConfig
+from .tgadminconfig import UserControllerConfig, GroupControllerConfig, PermissionControllerConfig
 
 class MongoAdminConfig(AdminConfig):
     def __init__(self,models,translations = None):

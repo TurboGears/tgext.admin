@@ -8,12 +8,17 @@ from tg.exceptions import HTTPNotFound
 from tg import config as tg_config
 
 from tgext.crud import CrudRestController
-from config import AdminConfig
+from .config import AdminConfig
 
 try:
     from tg.predicates import in_group
 except ImportError:
     from repoze.what.predicates import in_group
+
+try:
+    from tg.configuration import milestones
+except ImportError:
+    milestones = None
 
 class AdminController(TGController):
     """
@@ -41,21 +46,27 @@ class AdminController(TGController):
             self.default_index_template = self.config.default_index_template
             self.custom_template = True
         else:
-            default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
-            if default_renderer not in ['genshi', 'mako']:
-                if 'genshi' in tg_config.renderers:
-                    default_renderer = 'genshi'
-                elif 'mako' in tg_config.renderers:
-                    default_renderer = 'mako'
-                else:
-                    log.warn('TurboGears admin supports only Genshi ad Mako, please make sure you add at \
-    least one of those to your config/app_cfg.py base_config.renderers list.')
-                    self.missing_template = True
-
-            self.default_index_template = ':'.join((default_renderer,
-                                                    self.index.decoration.engines.get('text/html')[1]))
+            if milestones is None:
+                self._choose_index_template()
+            else:
+                milestones.renderers_ready.register(self._choose_index_template)
 
         self.controllers_cache = {}
+
+    def _choose_index_template(self):
+        default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
+        if default_renderer not in ['genshi', 'mako']:
+            if 'genshi' in tg_config.renderers:
+                default_renderer = 'genshi'
+            elif 'mako' in tg_config.renderers:
+                default_renderer = 'mako'
+            else:
+                log.warn('TurboGears admin supports only Genshi ad Mako, please make sure you add at \
+least one of those to your config/app_cfg.py base_config.renderers list.')
+                self.missing_template = True
+
+        self.default_index_template = ':'.join((default_renderer,
+                                                self.index.decoration.engines.get('text/html')[1]))
 
     @with_trailing_slash
     @expose('tgext.admin.templates.index')
