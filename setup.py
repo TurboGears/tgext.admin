@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.5.3'
+version = '0.5.4'
 here = os.path.abspath(os.path.dirname(__file__))
 try:
     README = open(os.path.join(here, 'README.txt')).read()
@@ -22,7 +22,7 @@ setup(name='tgext.admin',
       keywords='turbogears2.extension, TG2, TG, sprox, Rest, internet, admin',
       author='Christopher Perkins',
       author_email='chris@percious.com',
-      url='tgtools.googlecode.com',
+      url='https://github.com/TurboGears/tgext.admin',
       license='MIT',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['tgext'],
