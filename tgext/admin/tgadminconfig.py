@@ -7,22 +7,17 @@ from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FilteringSchema
 from formencode.validators import FieldsMatch
 
+from .widgets import AdminTableBase, AdminAddRecordForm, AdminEditableForm
+
 if sprox_with_tw2():
     from tw2.forms import TextField, PasswordField
 else:
     from tw.forms import TextField, PasswordField
 
 try:
-    from tgext.crud.utils import SortableTableBase as TableBase
-except:
-    from sprox.tablebase import TableBase
-
-try:
     from tgext.crud.utils import RequestLocalTableFiller as TableFiller
 except:
     from sprox.fillerbase import TableFiller
-
-from sprox.formbase import AddRecordForm, EditableForm
 
 from sprox.fillerbase import RecordFiller, AddFormFiller
 
@@ -35,10 +30,11 @@ class UserControllerConfig(CrudRestControllerConfig):
         display_name_field = translations.get('display_name',  'display_name')
 
         if not getattr(self, 'table_type', None):
-            class Table(TableBase):
+            class Table(AdminTableBase):
                 __entity__ = self.model
                 __omit_fields__ = [user_id_field, '_groups', '_password', password_field]
                 __url__ = '../users.json'
+
             self.table_type = Table
 
         if not getattr(self, 'table_filler_type', None):
@@ -57,14 +53,18 @@ class UserControllerConfig(CrudRestControllerConfig):
                                                              'Passwords do not match'})])
 
         if not getattr(self, 'edit_form_type', None):
-            class EditForm(EditableForm):
+            class EditForm(AdminEditableForm):
                 __entity__ = self.model
                 __require_fields__     = [user_name_field, email_field]
                 __omit_fields__        = ['created', '_password', '_groups']
                 __hidden_fields__      = [user_id_field]
-                __field_order__        = [user_id_field, user_name_field, email_field, display_name_field, 'password', 'verify_password', 'groups']
-                password = PasswordField('password', value='')
-                verify_password = PasswordField('verify_password')
+                __field_order__        = [user_id_field, user_name_field, email_field,
+                                          display_name_field, 'password', 'verify_password',
+                                          'groups']
+                password = PasswordField('password', value='',
+                                         **AdminEditableForm.DEFAULT_FIELD_OPTIONS)
+                verify_password = PasswordField('verify_password',
+                                                **AdminEditableForm.DEFAULT_FIELD_OPTIONS)
                 __base_validator__ = edit_form_validator
 
             if email_field is not None:
@@ -76,6 +76,7 @@ class UserControllerConfig(CrudRestControllerConfig):
         if not getattr(self, 'edit_filler_type', None):
             class UserEditFormFiller(EditFormFiller):
                 __entity__ = self.model
+
                 def get_value(self, *args, **kw):
                     v = super(UserEditFormFiller, self).get_value(*args, **kw)
                     del v['password']
@@ -84,12 +85,14 @@ class UserControllerConfig(CrudRestControllerConfig):
             self.edit_filler_type = UserEditFormFiller
 
         if not getattr(self, 'new_form_type', None):
-            class NewForm(AddRecordForm):
+            class NewForm(AdminAddRecordForm):
                 __entity__ = self.model
                 __require_fields__     = [user_name_field, email_field]
                 __omit_fields__        = [password_field, 'created', '_password', '_groups']
                 __hidden_fields__      = [user_id_field]
-                __field_order__        = [user_name_field, email_field, display_name_field, 'groups']
+                __field_order__        = [user_name_field, email_field, display_name_field,
+                                          'groups']
+
             if email_field is not None:
                 setattr(NewForm, email_field, TextField)
             if display_name_field is not None:
@@ -124,7 +127,7 @@ class GroupControllerConfig(CrudRestControllerConfig):
         group_id_field       = translations.get('group_id', 'group_id')
         group_name_field     = translations.get('group_name', 'group_name')
 
-        class GroupTable(TableBase):
+        class GroupTable(AdminTableBase):
             __model__ = self.model
             __limit_fields__ = [group_name_field, 'permissions']
             __url__ = '../groups.json'
@@ -135,13 +138,13 @@ class GroupControllerConfig(CrudRestControllerConfig):
             __limit_fields__ = [group_id_field, group_name_field, 'permissions']
         self.table_filler_type = GroupTableFiller
 
-        class GroupNewForm(AddRecordForm):
+        class GroupNewForm(AdminAddRecordForm):
             __model__ = self.model
             __limit_fields__ = [group_name_field, 'permissions']
             __field_order__ = [group_name_field, 'permissions']
         self.new_form_type = GroupNewForm
 
-        class GroupEditForm(EditableForm):
+        class GroupEditForm(AdminEditableForm):
             __model__ = self.model
             __limit_fields__ = [group_id_field, group_name_field, 'permissions']
             __field_order__ = [group_id_field, group_name_field, 'permissions']
@@ -153,7 +156,7 @@ class PermissionControllerConfig(CrudRestControllerConfig):
         permission_name_field            = translations.get('permission_name', 'permission_name')
         permission_description_field     = translations.get('permission_description', 'description')
 
-        class PermissionTable(TableBase):
+        class PermissionTable(AdminTableBase):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
             __url__ = '../permissions.json'
@@ -164,12 +167,12 @@ class PermissionControllerConfig(CrudRestControllerConfig):
             __limit_fields__ = [permission_id_field, permission_name_field, permission_description_field, 'groups']
         self.table_filler_type = PermissionTableFiller
 
-        class PermissionNewForm(AddRecordForm):
+        class PermissionNewForm(AdminAddRecordForm):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
         self.new_form_type = PermissionNewForm
 
-        class PermissionEditForm(EditableForm):
+        class PermissionEditForm(AdminEditableForm):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field,'groups']
         self.edit_form_type = PermissionEditForm

@@ -9,16 +9,11 @@ except ImportError:
 from tgext.crud import CrudRestController
 
 try:
-    from tgext.crud.utils import SortableTableBase as TableBase
-except:
-    from sprox.tablebase import TableBase
-
-try:
     from tgext.crud.utils import RequestLocalTableFiller as TableFiller
 except:
     from sprox.fillerbase import TableFiller
 
-from sprox.formbase import AddRecordForm, EditableForm
+from .widgets import AdminTableBase, AdminAddRecordForm, AdminEditableForm
 from sprox.fillerbase import RecordFiller, AddFormFiller
 
 from sprox.providerselector import ProviderTypeSelector, ProviderTypeSelectorError
@@ -34,10 +29,10 @@ class CrudRestControllerConfig(object):
 
         #this insanity is caused by some weird python scoping.
         # see previous changesets for first attempts
-        TableBaseClass = type('TableBaseClass', (TableBase,), {})
-        TableFillerClass = type('TableBaseClass', (TableFiller,), {})
-        EditableFormClass = type('EditableFormClass', (EditableForm,), {})
-        AddRecordFormClass = type('AddRecordFormClass', (AddRecordForm,),{})
+        TableBaseClass = type('TableBaseClass', (AdminTableBase,), {})
+        TableFillerClass = type('TableFillerClass', (TableFiller,), {})
+        EditableFormClass = type('EditableFormClass', (AdminEditableForm,), {})
+        AddRecordFormClass = type('AddRecordFormClass', (AdminAddRecordForm,),{})
 
         if not hasattr(self, 'table_type'):
             class Table(TableBaseClass):
