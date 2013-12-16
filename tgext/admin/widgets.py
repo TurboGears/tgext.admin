@@ -7,19 +7,16 @@ except:
 
 from sprox.formbase import AddRecordForm, EditableForm
 
+__all__ = ['AdminTableBase', 'AdminAddRecordForm', 'AdminEditableForm']
 
-class _BootstrapWidgetArgs(dict):
-    OPTIONS = {'css_class': 'form-control',
-               'container_attrs': {'class': 'form-group'}}
 
-    def __getitem__(self, item):
-        try:
-            return dict.__getitem__(self, item)
-        except KeyError:
-            return self.OPTIONS
+def _merge_dicts(d1, d2):
+    # A both dicts should be string keys only, dict(d1, **d2)
+    # should always work, but this is actually the safest way.
+    d = d1.copy()
+    d.update(d2)
+    return d
 
-    def __contains__(self, item):
-        return True
 
 if sprox_with_tw2():
     from tw2.core import ChildParam
@@ -34,24 +31,42 @@ if sprox_with_tw2():
         field_label_attrs = ChildParam('Extra attributes to include in the label of '
                                        'the widget itself.', default={})
 
+    class AdminFormMixin(object):
+        # Implemented as a MixIn instead of FormBase subclass
+        # to avoid third party users confusion over MRO when subclassing.
+        FIELD_OPTIONS = {'css_class': 'form-control',
+                         'container_attrs': {'class': 'form-group'}}
+
+        def _admin_init_attrs(self):
+            if 'child' not in self.__base_widget_args__:
+                self.__base_widget_args__['child'] = BootstrapFormLayout
+
+            for f in self.__fields__:
+                self.__field_widget_args__[f] = _merge_dicts(self.FIELD_OPTIONS,
+                                                             self.__field_widget_args__.get(f, {}))
+
     class AdminTableBase(TableBase):
-        __base_widget_args__ = {'css_class': 'table table-striped'}
+        def _do_init_attrs(self):
+            super(AdminTableBase, self)._do_init_attrs()
 
-    class AdminAddRecordForm(AddRecordForm):
-        DEFAULT_FIELD_OPTIONS = _BootstrapWidgetArgs.OPTIONS
-        __base_widget_args__   = {'child': BootstrapFormLayout}
-        __field_widget_args__  = _BootstrapWidgetArgs()
+            if 'css_class' not in self.__base_widget_args__:
+                self.__base_widget_args__['css_class'] = 'table table-striped'
 
-    class AdminEditableForm(EditableForm):
-        DEFAULT_FIELD_OPTIONS = _BootstrapWidgetArgs.OPTIONS
-        __base_widget_args__   = {'child': BootstrapFormLayout}
-        __field_widget_args__  = _BootstrapWidgetArgs()
+    class AdminAddRecordForm(AdminFormMixin, AddRecordForm):
+        def _do_init_attrs(self):
+            super(AdminAddRecordForm, self)._do_init_attrs()
+            self._admin_init_attrs()
+
+    class AdminEditableForm(AdminFormMixin, EditableForm):
+        def _do_init_attrs(self):
+            super(AdminEditableForm, self)._do_init_attrs()
+            self._admin_init_attrs()
 else:
     class AdminTableBase(TableBase):
         pass
 
     class AdminAddRecordForm(AddRecordForm):
-        DEFAULT_FIELD_OPTIONS = {}
+        FIELD_OPTIONS = {}
 
     class AdminEditableForm(EditableForm):
-        DEFAULT_FIELD_OPTIONS = {}
+        FIELD_OPTIONS = {}

@@ -62,9 +62,9 @@ class UserControllerConfig(CrudRestControllerConfig):
                                           display_name_field, 'password', 'verify_password',
                                           'groups']
                 password = PasswordField('password', value='',
-                                         **AdminEditableForm.DEFAULT_FIELD_OPTIONS)
+                                         **AdminEditableForm.FIELD_OPTIONS)
                 verify_password = PasswordField('verify_password',
-                                                **AdminEditableForm.DEFAULT_FIELD_OPTIONS)
+                                                **AdminEditableForm.FIELD_OPTIONS)
                 __base_validator__ = edit_form_validator
 
             if email_field is not None:
