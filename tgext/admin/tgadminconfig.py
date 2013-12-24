@@ -100,8 +100,7 @@ class UserControllerConfig(CrudRestControllerConfig):
             self.new_form_type = NewForm
 
     class defaultCrudRestController(CrudRestController):
-        @expose('genshi:tgext.crud.templates.edit')
-        @expose('mako:tgext.crud.templates.edit')
+        @expose(inherit=True)
         def edit(self, *args, **kw):
             return CrudRestController.edit(self, *args, **kw)
 

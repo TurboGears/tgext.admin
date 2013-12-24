@@ -63,7 +63,7 @@ class AdminController(TGController):
             elif 'jinja' in tg_config.renderers:
                 default_renderer = 'jinja'
             else:
-                log.warn('TurboGears admin supports only Genshi ad Mako, please make sure you add at \
+                log.warn('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
 least one of those to your config/app_cfg.py base_config.renderers list.')
                 self.missing_template = True
 
