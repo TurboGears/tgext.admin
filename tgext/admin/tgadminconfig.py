@@ -40,7 +40,7 @@ class UserControllerConfig(CrudRestControllerConfig):
         if not getattr(self, 'table_filler_type', None):
             class MyTableFiller(TableFiller):
                 __entity__ = self.model
-                __omit_fields__ = ['_password', password_field]
+                __omit_fields__ = ['_password', password_field, '_groups']
             self.table_filler_type = MyTableFiller
 
         if hasattr(TextField, 'req'):
