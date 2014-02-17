@@ -13,14 +13,16 @@ try:
 except:
     from sprox.fillerbase import TableFiller
 
-from .widgets import AdminTableBase, AdminAddRecordForm, AdminEditableForm
+from .layouts import BasicAdminLayout
 from sprox.fillerbase import RecordFiller, AddFormFiller
 
 from sprox.providerselector import ProviderTypeSelector, ProviderTypeSelectorError
 
+
 class CrudRestControllerConfig(object):
-    allow_only        = None
     defaultCrudRestController = CrudRestController
+    layout = BasicAdminLayout
+    allow_only = None
 
     def _post_init(self):
 
@@ -29,10 +31,10 @@ class CrudRestControllerConfig(object):
 
         #this insanity is caused by some weird python scoping.
         # see previous changesets for first attempts
-        TableBaseClass = type('TableBaseClass', (AdminTableBase,), {})
+        TableBaseClass = type('TableBaseClass', (self.layout.TableBase,), {})
         TableFillerClass = type('TableFillerClass', (TableFiller,), {})
-        EditableFormClass = type('EditableFormClass', (AdminEditableForm,), {})
-        AddRecordFormClass = type('AddRecordFormClass', (AdminAddRecordForm,),{})
+        EditableFormClass = type('EditableFormClass', (self.layout.EditableForm,), {})
+        AddRecordFormClass = type('AddRecordFormClass', (self.layout.AddRecordForm,),{})
 
         if not hasattr(self, 'table_type'):
             class Table(TableBaseClass):
@@ -65,10 +67,10 @@ class CrudRestControllerConfig(object):
             self.new_filler_type = NewFiller
 
 
-    def __init__(self, model, translations=None, default_to_dojo=True):
+    def __init__(self, model, translations=None, **kw):
         super(CrudRestControllerConfig, self).__init__()
+
         self.model = model
-        self.default_to_dojo = default_to_dojo
         self._do_init_with_translations(translations)
         self._post_init()
 
@@ -77,17 +79,16 @@ class CrudRestControllerConfig(object):
 
 provider_type_selector = ProviderTypeSelector()
 
+
 class AdminConfig(object):
+    DefaultControllerConfig = CrudRestControllerConfig
+    layout = BasicAdminLayout
 
-    DefaultControllerConfig    = CrudRestControllerConfig
-
-    default_index_template =  None
+    default_index_template = None
     allow_only = None
     include_left_menu = True
-    default_to_dojo = True
 
     def __init__(self, models, translations=None):
-
         if translations is None:
             translations = {}
 
@@ -110,7 +111,13 @@ class AdminConfig(object):
 
     def lookup_controller_config(self, model_name):
         model_name_lower = model_name.lower()
+
+        BaseControllerConfigClass = self.DefaultControllerConfig
         if hasattr(self, model_name_lower):
-            return getattr(self, model_name_lower)(self.models[model_name], self.translations, self.default_to_dojo)
-        return self.DefaultControllerConfig(self.models[model_name], self.translations, self.default_to_dojo)
+            BaseControllerConfigClass = getattr(self, model_name_lower)
+
+        class ControllerConfigClass(BaseControllerConfigClass):
+            layout = self.layout
+
+        return ControllerConfigClass(self.models[model_name], self.translations)
 

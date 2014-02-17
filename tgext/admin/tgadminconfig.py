@@ -7,8 +7,6 @@ from sprox.fillerbase import EditFormFiller
 from sprox.formbase import FilteringSchema
 from formencode.validators import FieldsMatch
 
-from .widgets import AdminTableBase, AdminAddRecordForm, AdminEditableForm
-
 if sprox_with_tw2():
     from tw2.forms import TextField, PasswordField
 else:
@@ -20,6 +18,8 @@ except:
     from sprox.fillerbase import TableFiller
 
 from sprox.fillerbase import RecordFiller, AddFormFiller
+from .layouts import BootstrapAdminLayout
+
 
 class UserControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
@@ -30,7 +30,7 @@ class UserControllerConfig(CrudRestControllerConfig):
         display_name_field = translations.get('display_name',  'display_name')
 
         if not getattr(self, 'table_type', None):
-            class Table(AdminTableBase):
+            class Table(self.layout.TableBase):
                 __entity__ = self.model
                 __omit_fields__ = [user_id_field, '_groups', '_password', password_field]
                 __url__ = '../users.json'
@@ -47,13 +47,13 @@ class UserControllerConfig(CrudRestControllerConfig):
             edit_form_validator = FieldsMatch('password', 'verify_password',
                                               messages={'invalidNoMatch': 'Passwords do not match'})
         else:
-            edit_form_validator =  FilteringSchema(chained_validators=[FieldsMatch('password',
-                                                             'verify_password',
-                                                             messages={'invalidNoMatch':
-                                                             'Passwords do not match'})])
+            edit_form_validator = FilteringSchema(chained_validators=[FieldsMatch('password',
+                                                                           'verify_password',
+                                                  messages={'invalidNoMatch':
+                                                            'Passwords do not match'})])
 
         if not getattr(self, 'edit_form_type', None):
-            class EditForm(AdminEditableForm):
+            class EditForm(self.layout.EditableForm):
                 __entity__ = self.model
                 __require_fields__     = [user_name_field, email_field]
                 __omit_fields__        = ['created', '_password', '_groups']
@@ -62,9 +62,9 @@ class UserControllerConfig(CrudRestControllerConfig):
                                           display_name_field, 'password', 'verify_password',
                                           'groups']
                 password = PasswordField('password', value='',
-                                         **AdminEditableForm.FIELD_OPTIONS)
+                                         **self.layout.EditableForm.FIELD_OPTIONS)
                 verify_password = PasswordField('verify_password',
-                                                **AdminEditableForm.FIELD_OPTIONS)
+                                                **self.layout.EditableForm.FIELD_OPTIONS)
                 __base_validator__ = edit_form_validator
 
             if email_field is not None:
@@ -85,7 +85,7 @@ class UserControllerConfig(CrudRestControllerConfig):
             self.edit_filler_type = UserEditFormFiller
 
         if not getattr(self, 'new_form_type', None):
-            class NewForm(AdminAddRecordForm):
+            class NewForm(self.layout.AddRecordForm):
                 __entity__ = self.model
                 __require_fields__     = [user_name_field, email_field]
                 __omit_fields__        = [password_field, 'created', '_password', '_groups']
@@ -120,13 +120,12 @@ class UserControllerConfig(CrudRestControllerConfig):
             redirect('../')
 
 
-
 class GroupControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
         group_id_field       = translations.get('group_id', 'group_id')
         group_name_field     = translations.get('group_name', 'group_name')
 
-        class GroupTable(AdminTableBase):
+        class GroupTable(self.layout.TableBase):
             __model__ = self.model
             __limit_fields__ = [group_name_field, 'permissions']
             __url__ = '../groups.json'
@@ -137,17 +136,18 @@ class GroupControllerConfig(CrudRestControllerConfig):
             __limit_fields__ = [group_id_field, group_name_field, 'permissions']
         self.table_filler_type = GroupTableFiller
 
-        class GroupNewForm(AdminAddRecordForm):
+        class GroupNewForm(self.layout.AddRecordForm):
             __model__ = self.model
             __limit_fields__ = [group_name_field, 'permissions']
             __field_order__ = [group_name_field, 'permissions']
         self.new_form_type = GroupNewForm
 
-        class GroupEditForm(AdminEditableForm):
+        class GroupEditForm(self.layout.EditableForm):
             __model__ = self.model
             __limit_fields__ = [group_id_field, group_name_field, 'permissions']
             __field_order__ = [group_id_field, group_name_field, 'permissions']
         self.edit_form_type = GroupEditForm
+
 
 class PermissionControllerConfig(CrudRestControllerConfig):
     def _do_init_with_translations(self, translations):
@@ -155,7 +155,7 @@ class PermissionControllerConfig(CrudRestControllerConfig):
         permission_name_field            = translations.get('permission_name', 'permission_name')
         permission_description_field     = translations.get('permission_description', 'description')
 
-        class PermissionTable(AdminTableBase):
+        class PermissionTable(self.layout.TableBase):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
             __url__ = '../permissions.json'
@@ -166,12 +166,12 @@ class PermissionControllerConfig(CrudRestControllerConfig):
             __limit_fields__ = [permission_id_field, permission_name_field, permission_description_field, 'groups']
         self.table_filler_type = PermissionTableFiller
 
-        class PermissionNewForm(AdminAddRecordForm):
+        class PermissionNewForm(self.layout.AddRecordForm):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field, 'groups']
         self.new_form_type = PermissionNewForm
 
-        class PermissionEditForm(AdminEditableForm):
+        class PermissionEditForm(self.layout.EditableForm):
             __model__ = self.model
             __limit_fields__ = [permission_name_field, permission_description_field,'groups']
         self.edit_form_type = PermissionEditForm
@@ -180,10 +180,12 @@ class PermissionControllerConfig(CrudRestControllerConfig):
             __model__ = self.model
         self.edit_filler_type = PermissionEditFiller
 
-class TGAdminConfig(AdminConfig):
-    default_to_dojo = False
 
+class TGAdminConfig(AdminConfig):
     user       = UserControllerConfig
     group      = GroupControllerConfig
     permission = PermissionControllerConfig
 
+
+class BootstrapTGAdminConfig(TGAdminConfig):
+    layout     = BootstrapAdminLayout

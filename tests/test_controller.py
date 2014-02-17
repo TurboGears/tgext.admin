@@ -132,21 +132,20 @@ class TestAdminController:
         </thead>""" in resp, resp
 
 
-    #this doesn't work for some order of loading issue
     def test_get_users_json(self):
-        raise SkipTest
         resp = self.app.get('/admin/users.json')
-        assert """{"numRows": 1, "items": [{"town": "Arvada", "user_id": "1", "created":""" in resp, resp
+        json = resp.json
+        values = json.get('value_list', {})
+        assert values.get('total', 0) == 1
+        assert values.get('page', 0) == 1
 
     def test_edit_user(self):
         resp = self.app.get('/admin/users/1/edit')
-        assert """<tr class="odd" id="sx__password:container">
-        <th>Password</th>
-        <td>
-            <input name="_password" type="password" id="sx__password" />
-            <span id="sx__password:error"></span>
-        </td>
-    </tr>""" in resp, resp
+
+        # Check password field available in edit
+        assert """<tr class="odd" id="sx_password:container">
+        <th><label for="sx_password">Password</label></th>
+        <td>""" in resp, resp
 
     def test_edit_user_success(self):
         resp = self.app.post('/admin/users/1/', params={'sprox_id':'put__User',

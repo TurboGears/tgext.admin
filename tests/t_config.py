@@ -10,8 +10,7 @@ class TestConfig(AppConfig):
     def __init__(self):
         AppConfig.__init__(self)
         self.renderers = ['json', 'genshi', 'mako']
-        from pylons.configuration import config
-        config['renderers'] = ['json', 'genshi', 'mako']
+        tg.config['renderers'] = ['json', 'genshi', 'mako']
         self.render_functions = tg.util.Bunch()
         self.package = tests
         #self.default_renderer = 'genshi'
