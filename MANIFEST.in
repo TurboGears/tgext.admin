@@ -1,1 +1,5 @@
 recursive-include tgext/admin/templates *
+
+global-exclude __pycache__/*
+global-exclude *.pyc
+recursive-exclude tests *
