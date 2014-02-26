@@ -4,6 +4,10 @@ Introduction
 Changelog
 ===========
 
+0.6.0
+------
+Support for Layouts in TGAdminConfig with Bootstrap3 Layout
+
 0.3
 ----
 Lookup now uses ProviderSelector, for better mongo support
