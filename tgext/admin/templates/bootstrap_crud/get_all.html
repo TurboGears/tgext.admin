@@ -41,8 +41,8 @@ PAGER_ARGS = dict(link=mount_point+'/',
               py:content="paginator.pager(**PAGER_ARGS)"/>
         </div>
 
-        <div class="col-md-7" py:if="search_fields">
-            <form class="form-inline pull-right">
+        <div class="col-md-7">
+            <form py:if="search_fields" class="form-inline pull-right">
               <div class="form-group">
                 <select id="crud_search_field" class="form-control"
                         onchange="crud_search_field_changed(this);">
@@ -55,6 +55,7 @@ PAGER_ARGS = dict(link=mount_point+'/',
 
               <div class="form-group">
                 <input id="crud_search_value" class="form-control" type="text"
+                       placeholder="equals / contains"
                        name="${current_search[0]}" value="${current_search[1]}"/>
               </div>
 

@@ -16,7 +16,8 @@ class BasicAdminLayout(object):
 
 class BootstrapAdminLayout(object):
     template_index = 'tgext.admin.templates.bootstrap_index'
-    crud_templates = {'get_all': ['genshi:tgext.admin.templates.bootstrap_crud.get_all'],
+    crud_templates = {'get_all': ['genshi:tgext.admin.templates.bootstrap_crud.get_all',
+                                  'jinja:tgext.admin.templates.bootstrap_crud.get_all'],
                       'edit': ['genshi:tgext.admin.templates.bootstrap_crud.edit',
                                'jinja:tgext.admin.templates.bootstrap_crud.edit',
                                'mako:tgext.admin.templates.bootstrap_crud.edit'],
