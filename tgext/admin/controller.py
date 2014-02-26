@@ -98,9 +98,11 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
             def _before(self, *args, **kw):
                 super(self.__class__, self)._before(*args, **kw)
 
+                default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
                 for layout_template in ('get_all', 'new', 'edit'):
                     for template in config.layout.crud_templates.get(layout_template, []):
-                        override_template(getattr(self, layout_template), template)
+                        if template.startswith(default_renderer):
+                            override_template(getattr(self, layout_template), template)
 
         menu_items = None
         if self.config.include_left_menu:
