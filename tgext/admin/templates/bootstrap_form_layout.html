@@ -2,7 +2,7 @@
     <py:for each="c in w.children_hidden">
         ${c.display()}
     </py:for>
-    <div py:for="i,c in enumerate(w.children_non_hidden)" title="${w.hover_help and c.help_text or None}"
+    <div py:for="c in w.children_non_hidden" title="${w.hover_help and c.help_text or None}"
          class="${((c.validator and getattr(c.validator, 'required', getattr(c.validator, 'not_empty', False))) and ' required' or '') + (c.error_msg and ' has-error' or '')}">
       <div py:attrs="c.container_attrs">
         <label for="${c.compound_id}" py:attrs="getattr(c, 'label_attrs', {})">$c.label</label>
