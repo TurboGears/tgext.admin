@@ -111,7 +111,7 @@ if sprox_with_tw2():
             <span class="glyphicon glyphicon-trash"></span>
         </button>
     </form>
-    <a href="%(pklist)s/edit" class="btn btn-warning">
+    <a href="%(pklist)s/edit" class="btn btn-primary">
         <span class="glyphicon glyphicon-pencil"></span>
     </a>
 ''' % dict(msg=l_('Are you sure?'),
