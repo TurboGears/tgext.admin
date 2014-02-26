@@ -12,11 +12,6 @@ if sprox_with_tw2():
 else:
     from tw.forms import TextField, PasswordField
 
-try:
-    from tgext.crud.utils import RequestLocalTableFiller as TableFiller
-except:
-    from sprox.fillerbase import TableFiller
-
 from sprox.fillerbase import RecordFiller, AddFormFiller
 from .layouts import BootstrapAdminLayout
 
@@ -38,7 +33,7 @@ class UserControllerConfig(CrudRestControllerConfig):
             self.table_type = Table
 
         if not getattr(self, 'table_filler_type', None):
-            class MyTableFiller(TableFiller):
+            class MyTableFiller(self.layout.TableFiller):
                 __entity__ = self.model
                 __omit_fields__ = ['_password', password_field, '_groups']
             self.table_filler_type = MyTableFiller
@@ -131,7 +126,7 @@ class GroupControllerConfig(CrudRestControllerConfig):
             __url__ = '../groups.json'
         self.table_type = GroupTable
 
-        class GroupTableFiller(TableFiller):
+        class GroupTableFiller(self.layout.TableFiller):
             __model__ = self.model
             __limit_fields__ = [group_id_field, group_name_field, 'permissions']
         self.table_filler_type = GroupTableFiller
@@ -161,7 +156,7 @@ class PermissionControllerConfig(CrudRestControllerConfig):
             __url__ = '../permissions.json'
         self.table_type = PermissionTable
 
-        class PermissionTableFiller(TableFiller):
+        class PermissionTableFiller(self.layout.TableFiller):
             __model__ = self.model
             __limit_fields__ = [permission_id_field, permission_name_field, permission_description_field, 'groups']
         self.table_filler_type = PermissionTableFiller

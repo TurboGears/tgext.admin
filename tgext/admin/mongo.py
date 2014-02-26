@@ -2,6 +2,7 @@ from .config import AdminConfig
 from .controller import AdminController
 import inspect
 from .tgadminconfig import UserControllerConfig, GroupControllerConfig, PermissionControllerConfig
+from .layouts import BootstrapAdminLayout
 
 class MongoAdminConfig(AdminConfig):
     def __init__(self,models,translations = None):
@@ -44,3 +45,6 @@ class TGMongoAdminConfig(MongoAdminConfig):
                         'permission_id':'_id'}
 
         super(MongoAdminConfig, self).__init__(models, translations)
+
+class BootstrapTGMongoAdminConfig(TGMongoAdminConfig):
+    layout = BootstrapAdminLayout

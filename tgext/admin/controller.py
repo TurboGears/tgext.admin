@@ -43,8 +43,7 @@ class AdminController(TGController):
         self.missing_template = False
 
         if self.config.default_index_template:
-            self.default_index_template = self.config.default_index_template
-            self.custom_template = True
+            expose(self.config.default_index_template)(self.index)
         else:
             if milestones is None:
                 self._choose_index_template()
@@ -67,26 +66,22 @@ class AdminController(TGController):
 least one of those to your config/app_cfg.py base_config.renderers list.')
                 self.missing_template = True
 
-        self.default_index_template = ':'.join((default_renderer,
-                                                self.index.decoration.engines.get('text/html')[1]))
+        index_template = ':'.join((default_renderer, self.config.layout.template_index))
+        expose(index_template)(self.index)
 
     @with_trailing_slash
-    @expose('tgext.admin.templates.index')
+    @expose()
     def index(self):
         if self.missing_template:
             raise Exception('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
     least one of those to your config/app_cfg.py base_config.renderers list.')
 
-        #overrides the template for this method
-        original_index_template = self.index.decoration.engines['text/html']
-        new_engine = self.default_index_template.split(':')
-        new_engine.extend(original_index_template[2:])
-        self.index.decoration.engines['text/html'] = new_engine
         return dict(models=[model.__name__ for model in self.config.models.values()])
 
     def _make_controller(self, config, session):
         m = config.model
         Controller = config.defaultCrudRestController
+
         class ModelController(Controller):
             model        = m
             table        = config.table_type(session)
@@ -96,6 +91,17 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
             edit_form    = config.edit_form_type(session)
             edit_filler  = config.edit_filler_type(session)
             allow_only   = config.allow_only
+
+            if hasattr(config.layout, 'crud_resources'):
+                resources = config.layout.crud_resources
+
+            def _before(self, *args, **kw):
+                super(self.__class__, self)._before(*args, **kw)
+
+                for layout_template in ('get_all', 'new', 'edit'):
+                    for template in config.layout.crud_templates.get(layout_template, []):
+                        override_template(getattr(self, layout_template), template)
+
         menu_items = None
         if self.config.include_left_menu:
             menu_items = self.config.models

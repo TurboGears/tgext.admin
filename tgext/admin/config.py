@@ -8,11 +8,6 @@ except ImportError:
 
 from tgext.crud import CrudRestController
 
-try:
-    from tgext.crud.utils import RequestLocalTableFiller as TableFiller
-except:
-    from sprox.fillerbase import TableFiller
-
 from .layouts import BasicAdminLayout
 from sprox.fillerbase import RecordFiller, AddFormFiller
 
@@ -25,14 +20,10 @@ class CrudRestControllerConfig(object):
     allow_only = None
 
     def _post_init(self):
-
-        #RecordFillerClass = type('RecordFillerClass', (RecordFiller,),{})
-        #AddFormFillerClass = type('AddFormFillerClass', (AddFormFiller,),{})
-
         #this insanity is caused by some weird python scoping.
         # see previous changesets for first attempts
         TableBaseClass = type('TableBaseClass', (self.layout.TableBase,), {})
-        TableFillerClass = type('TableFillerClass', (TableFiller,), {})
+        TableFillerClass = type('TableFillerClass', (self.layout.TableFiller,), {})
         EditableFormClass = type('EditableFormClass', (self.layout.EditableForm,), {})
         AddRecordFormClass = type('AddRecordFormClass', (self.layout.AddRecordForm,),{})
 
@@ -107,7 +98,6 @@ class AdminConfig(object):
 
         self.models = models
         self.translations = translations
-        self.index_template = self.default_index_template
 
     def lookup_controller_config(self, model_name):
         model_name_lower = model_name.lower()
