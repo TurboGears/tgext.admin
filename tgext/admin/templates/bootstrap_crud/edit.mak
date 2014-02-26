@@ -7,7 +7,7 @@ ${tmpl_context.title} - ${model}
   <div class="row">
     <div class="col-md-2">
       % if hasattr(tmpl_context, 'menu_items'):
-        <ul class="nav crud-sidebar">
+        <ul class="nav crud-sidebar hidden-xs hidden-sm">
           % for lower, item in sorted(tmpl_context.menu_items.items()):
             <li class="${item==model and 'active' or ''}">
                 <a href="${tmpl_context.crud_helpers.make_link(lower, pk_count or 1)}">${item}</a>

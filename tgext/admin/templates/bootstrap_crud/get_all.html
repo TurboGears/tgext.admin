@@ -18,7 +18,7 @@ PAGER_ARGS = dict(link=mount_point+'/',
   <div class="row">
     <div class="col-md-2">
         <ul py:if="hasattr(tmpl_context, 'menu_items')"
-            class="nav crud-sidebar">
+            class="nav crud-sidebar hidden-xs hidden-sm">
             <li py:for="lower, item in sorted(tmpl_context.menu_items.items())"
                 class="${item==model and 'active' or ''}">
                 <a href="${tmpl_context.crud_helpers.make_link(lower)}">$item</a>
@@ -30,19 +30,20 @@ PAGER_ARGS = dict(link=mount_point+'/',
       <h1 class="page-header">$model Listing</h1>
 
       <div class="row">
-        <div class="col-md-2">
+        <div class="col-xs-3 col-md-2">
           <a class="btn btn-success"
              href='${tg.url("new", params=tmpl_context.kept_params)}'>New $model</a>
         </div>
 
-        <div class="col-md-3">
-          <ul py:if="value_list" class="pagination" style="margin:0;"
+        <div class="col-xs-9 col-md-3">
+          <ul py:if="value_list" class="pagination pull-sm-right" style="margin:0;"
               py:with="paginator=tmpl_context.paginators.value_list"
               py:content="paginator.pager(**PAGER_ARGS)"/>
         </div>
 
-        <div class="col-md-7">
-            <form py:if="search_fields" class="form-inline pull-right">
+        <div class="col-xs-12 col-md-7">
+            <div class="hidden-lg hidden-md">&nbsp;</div>
+            <form py:if="search_fields" class="form-inline pull-md-right">
               <div class="form-group">
                 <select id="crud_search_field" class="form-control"
                         onchange="crud_search_field_changed(this);">
@@ -66,7 +67,7 @@ PAGER_ARGS = dict(link=mount_point+'/',
 
       <br/>
 
-      <div>
+      <div class="table-responsive">
         ${Markup(tmpl_context.widget(value=value_list, action=mount_point+'.json'))}
       </div>
 

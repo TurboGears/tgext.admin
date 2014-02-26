@@ -105,15 +105,16 @@ if sprox_with_tw2():
             pklist = '/'.join(map(lambda x: str(getattr(obj, x)), primary_fields))
 
             return Markup('''
+    <a href="%(pklist)s/edit" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+    </a>
+    <div class="hidden-lg hidden-md">&nbsp;</div>
     <form method="POST" action="%(pklist)s" style="display: inline">
         <input type="hidden" name="_method" value="DELETE" />
         <button type="submit" class="btn btn-danger" onclick="return confirm('%(msg)s')">
             <span class="glyphicon glyphicon-trash"></span>
         </button>
     </form>
-    <a href="%(pklist)s/edit" class="btn btn-primary">
-        <span class="glyphicon glyphicon-pencil"></span>
-    </a>
 ''' % dict(msg=l_('Are you sure?'),
            pklist=pklist))
 

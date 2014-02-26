@@ -32,6 +32,18 @@ class BootstrapAdminLayout(object):
     font-weight: bold;
     border-left: 3px solid #eee;
 }
+
+@media (max-width: 991px) {
+    .pull-sm-right {
+        float: right;
+    }
+}
+
+@media (min-width: 992px) {
+    .pull-md-right {
+        float: right;
+    }
+}
 ''')]
 
     TableBase = BoostrapAdminTableBase
