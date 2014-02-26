@@ -5,10 +5,10 @@ ${tmpl_context.title} - ${model} Listing
 </%def>
 
 <%
-PAGER_ARGS = dict(link=mount_point+'/',
-                  page_link_template='<li><a%s>%s</a></li>',
-                  page_plain_template='<li%s><span>%s</span></li>',
-                  curpage_attr={'class': 'active'})
+PAGER_ARGS = tmpl_context.make_pager_args(link=mount_point+'/',
+                                          page_link_template='<li><a%s>%s</a></li>',
+                                          page_plain_template='<li%s><span>%s</span></li>',
+                                          curpage_attr={'class': 'active'})
 %>
 
 <div class="row">

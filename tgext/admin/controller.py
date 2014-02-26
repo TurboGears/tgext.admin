@@ -6,9 +6,10 @@ from tg.controllers import TGController
 from tg.decorators import with_trailing_slash, override_template, expose
 from tg.exceptions import HTTPNotFound
 from tg import config as tg_config
+from tg import tmpl_context
 
-from tgext.crud import CrudRestController
 from .config import AdminConfig
+from .utils import make_pager_args
 
 try:
     from tg.predicates import in_group
@@ -98,6 +99,7 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
             def _before(self, *args, **kw):
                 super(self.__class__, self)._before(*args, **kw)
 
+                tmpl_context.make_pager_args = make_pager_args
                 default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
                 for layout_template in ('get_all', 'new', 'edit'):
                     for template in config.layout.crud_templates.get(layout_template, []):
