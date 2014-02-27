@@ -102,7 +102,7 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
 
                 tmpl_context.make_pager_args = make_pager_args
 
-                if request.response_type == 'text/html':
+                if request.response_type not in ('application/json'):
                     default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
                     for layout_template in ('get_all', 'new', 'edit'):
                         for template in config.layout.crud_templates.get(layout_template, []):
