@@ -25,8 +25,8 @@ class MongoAdminConfig(AdminConfig):
     def lookup_controller_config(self, model_name):
         model_name_lower = model_name.lower()
         if hasattr(self, model_name_lower):
-            return getattr(self, model_name_lower)(self.models[model_name], self.translations, False)
-        return self.DefaultControllerConfig(self.models[model_name], self.translations, False)
+            return getattr(self, model_name_lower)(self.models[model_name], self.translations)
+        return self.DefaultControllerConfig(self.models[model_name], self.translations)
 
 class MongoAdmin(AdminController):
     def __init__(self,models):
