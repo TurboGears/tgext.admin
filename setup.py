@@ -27,7 +27,7 @@ setup(name='tgext.admin',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['tgext'],
       include_package_data=True,
-      zip_safe=True,
+      zip_safe=False,
       install_requires=[
           'setuptools',
           'tgext.crud>=0.7.1',
