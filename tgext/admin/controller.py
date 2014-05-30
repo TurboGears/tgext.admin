@@ -120,7 +120,7 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
         try:
             model = self.config.models[model_name]
         except KeyError:
-            raise HTTPNotFound().exception
+            raise HTTPNotFound()
 
         try:
             controller = self.controllers_cache[model_name]
