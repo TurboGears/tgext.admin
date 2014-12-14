@@ -17,6 +17,9 @@ from .layouts import BootstrapAdminLayout
 
 
 class UserControllerConfig(CrudRestControllerConfig):
+    icon_class = 'glyphicon-user'
+    admin_group = 'Users and Groups'
+
     def _do_init_with_translations(self, translations):
         user_id_field      = translations.get('user_id',       'user_id')
         user_name_field    = translations.get('user_name',     'user_name')
@@ -116,6 +119,9 @@ class UserControllerConfig(CrudRestControllerConfig):
 
 
 class GroupControllerConfig(CrudRestControllerConfig):
+    icon_class = 'glyphicon-folder-open'
+    admin_group = 'Users and Groups'
+
     def _do_init_with_translations(self, translations):
         group_id_field       = translations.get('group_id', 'group_id')
         group_name_field     = translations.get('group_name', 'group_name')
@@ -145,6 +151,9 @@ class GroupControllerConfig(CrudRestControllerConfig):
 
 
 class PermissionControllerConfig(CrudRestControllerConfig):
+    icon_class = 'glyphicon-thumbs-up'
+    admin_group = 'Users and Groups'
+
     def _do_init_with_translations(self, translations):
         permission_id_field              = translations.get('permission_id', 'permission_id')
         permission_name_field            = translations.get('permission_name', 'permission_name')

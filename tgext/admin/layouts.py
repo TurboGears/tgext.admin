@@ -50,3 +50,7 @@ class BootstrapAdminLayout(object):
     AddRecordForm = BootstrapAdminAddRecordForm
     EditableForm = BootstrapAdminEditableForm
     TableFiller = BootstrapAdminTableFiller
+
+
+class GroupedBootstrapAdminLayout(BootstrapAdminLayout):
+    template_index = 'tgext.admin.templates.bootstrap_grouped_index'

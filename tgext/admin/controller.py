@@ -78,7 +78,11 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
             raise Exception('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
     least one of those to your config/app_cfg.py base_config.renderers list.')
 
-        return dict(models=[model.__name__ for model in self.config.models.values()])
+        return dict(config=self.config,
+                    model_config=lambda model: (model.lower(),
+                                                getattr(self.config, model.lower(),
+                                                        self.config.DefaultControllerConfig)),
+                    models=[model.__name__ for model in self.config.models.values()])
 
     def _make_controller(self, config, session):
         m = config.model

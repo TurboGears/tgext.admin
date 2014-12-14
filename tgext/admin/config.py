@@ -72,6 +72,37 @@ provider_type_selector = ProviderTypeSelector()
 
 
 class AdminConfig(object):
+    """
+    :class attributes:
+
+        **layout**
+            The look and feel of the admin.
+            Three builtin layouts are available: ``tgext.admin.layouts.BasicAdminLayout``,
+            ``tgext.admin.layouts.BootstrapAdminLayout`` and
+            ``tgext.admin.layouts.GroupedBootstrapAdminLayout``.
+
+            .. note::
+                ``GroupedBootstrapAdminLayout`` only works with the Genshi
+                template language, so it cannot be used when quickstarting with Jinja or Mako.
+
+
+        **default_index_template**
+            This is the template of the /admin page, by default the one specified
+            inside the ``layout`` is used.
+
+        **allow_only**
+            Predicate to restrict access to the whole admin.
+            By default ``in_group('managers')`` is used.
+
+        **include_left_menu**
+            ``bool`` that states if the sidebar should be included in admin pages or not.
+            By default the sidebar is visible, please note that hiding the sidebar might
+            break the admin layout.
+
+        **DefaultControllerConfig**
+            The default CRUD configuration for models that do not provide a custom
+            CRUD configuration. By default ``tgext.admin.config.CrudRestControllerConfig``
+    """
     DefaultControllerConfig = CrudRestControllerConfig
     layout = BasicAdminLayout
 
