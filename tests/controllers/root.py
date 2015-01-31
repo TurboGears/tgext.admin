@@ -1,4 +1,4 @@
-print 'loading root'
+print('loading root')
 
 from tg import config
 from tgext.admin.controller import AdminController
@@ -11,5 +11,4 @@ class UnSecuredAdminController(AdminController):
 
 class RootController(TGController):
     admin =UnSecuredAdminController(model, DBSession)
-    
-    
+

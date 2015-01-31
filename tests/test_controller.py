@@ -55,7 +55,7 @@ def setup():
     session = sessionmaker(bind=engine)()
     setup_records(session)
     session.commit()
-    print 'finished setting up db'
+    print('finished setting up db')
 
 def _teardown():
     os.remove(test_db_path)
