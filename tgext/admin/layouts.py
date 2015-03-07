@@ -46,7 +46,7 @@ class BootstrapAdminLayout(object):
 }
 ''')]
 
-    TableBase = BoostrapAdminTableBase
+    TableBase = BootstrapAdminTableBase
     AddRecordForm = BootstrapAdminAddRecordForm
     EditableForm = BootstrapAdminEditableForm
     TableFiller = BootstrapAdminTableFiller

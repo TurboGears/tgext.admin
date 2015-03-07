@@ -16,7 +16,7 @@ from markupsafe import Markup
 
 
 __all__ = ['AdminTableBase', 'AdminAddRecordForm', 'AdminEditableForm', 'AdminTableFiller',
-           'BoostrapAdminTableBase', 'BootstrapAdminAddRecordForm', 'BootstrapAdminEditableForm',
+           'BootstrapAdminTableBase', 'BootstrapAdminAddRecordForm', 'BootstrapAdminEditableForm',
            'BootstrapAdminTableFiller']
 
 
@@ -82,9 +82,9 @@ if sprox_with_tw2():
                 self.__field_widget_args__[f] = _merge_dicts(self.FIELD_OPTIONS,
                                                              self.__field_widget_args__.get(f, {}))
 
-    class BoostrapAdminTableBase(AdminTableBase):
+    class BootstrapAdminTableBase(AdminTableBase):
         def _do_init_attrs(self):
-            super(BoostrapAdminTableBase, self)._do_init_attrs()
+            super(BootstrapAdminTableBase, self)._do_init_attrs()
 
             if 'css_class' not in self.__base_widget_args__:
                 self.__base_widget_args__['css_class'] = 'table table-striped'
@@ -119,7 +119,7 @@ if sprox_with_tw2():
            pklist=pklist))
 
 else:
-    BoostrapAdminTableBase = AdminTableBase
+    BootstrapAdminTableBase = AdminTableBase
     BootstrapAdminAddRecordForm = AdminAddRecordForm
     BootstrapAdminEditableForm = AdminEditableForm
     BootstrapAdminTableFiller = AdminTableFiller
