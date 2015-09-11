@@ -33,6 +33,65 @@ class BootstrapAdminLayout(object):
     border-left: 3px solid #eee;
 }
 
+.subdocument {
+    border-left: 12px solid #eee;
+    padding: 0 0 0 10px;
+    margin: 5px 0 0 0;
+    list-style-type: none;
+}
+
+.subdocuments {
+    position: relative;
+}
+
+.subdocuments .subdocuments-delete {
+    position: absolute;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 8px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin-top: 2px;
+    visibility: hidden;
+}
+
+.subdocuments .subdocuments-delete:before {
+    content: "\\e014";
+    visibility: visible;
+    color: red;
+}
+
+.subdocuments .subdocuments-delete:hover {
+    text-decoration: none;
+}
+
+.subdocuments .subdocuments-add {
+    position: absolute;
+    right: 5px;
+    top: -25px;
+    visibility: hidden;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 8px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.subdocuments .subdocuments-add:after {
+    visibility: visible;
+    color: green;
+    content: "\\2b";
+}
+
+.subdocuments .subdocuments-add:hover {
+    text-decoration: none;
+}
+
+
 @media (max-width: 991px) {
     .pull-sm-right {
         float: right;

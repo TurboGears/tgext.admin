@@ -11,6 +11,12 @@ try:
 except:
     from sprox.fillerbase import TableFiller
 
+try:
+    from sprox.widgets import SubDocumentsList, SubDocument
+except:
+    class SubDocumentsList: pass
+    class SubDocument: pass
+
 from sprox.formbase import AddRecordForm, EditableForm
 from markupsafe import Markup
 
@@ -79,7 +85,25 @@ if sprox_with_tw2():
                                                                    value=submit_text)
 
             for f in self.__fields__:
-                self.__field_widget_args__[f] = _merge_dicts(self.FIELD_OPTIONS,
+                try:
+                    field = self.__metadata__[f]
+                except KeyError:
+                    continue
+
+                field_options = self.FIELD_OPTIONS.copy()
+
+                field_widget_type = self._do_get_field_widget_type(f, field)
+                if field_widget_type in (SubDocument, SubDocumentsList):
+                    field_options.pop('css_class')
+                    field_options['children_attrs'] = self.FIELD_OPTIONS
+
+                if field_widget_type == SubDocument:
+                    field_options['template'] = 'tgext.admin.templates.bootstrap_form_layout'
+
+                if field_widget_type == SubDocumentsList:
+                    field_options['child'] = SubDocument(template='tgext.admin.templates.bootstrap_form_layout')
+
+                self.__field_widget_args__[f] = _merge_dicts(field_options,
                                                              self.__field_widget_args__.get(f, {}))
 
     class BootstrapAdminTableBase(AdminTableBase):
