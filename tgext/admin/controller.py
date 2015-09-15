@@ -37,7 +37,7 @@ class AdminController(TGController):
         else:
             config = config_type(models, translations)
 
-        if config.allow_only:
+        if config.allow_only is not None:
             self.allow_only = config.allow_only
 
         self.config = config
