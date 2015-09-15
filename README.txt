@@ -4,6 +4,11 @@ Introduction
 Changelog
 ===========
 
+0.6.6
+-----
+* Fix for allow_only not accepting custom predicated
+* Preliminary support for Sprox version with subdocuments editing
+
 0.6.0
 ------
 Support for Layouts in TGAdminConfig with Bootstrap3 Layout
