@@ -54,7 +54,8 @@ class AdminController(TGController):
 
         self.controllers_cache = {}
 
-    def _choose_index_template(self):
+    @classmethod
+    def _get_default_renderer(cls):
         default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
         if default_renderer not in ['genshi', 'mako', 'jinja']:
             if 'genshi' in tg_config.renderers:
@@ -64,9 +65,16 @@ class AdminController(TGController):
             elif 'jinja' in tg_config.renderers:
                 default_renderer = 'jinja'
             else:
+                default_renderer = None
                 log.warn('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
 least one of those to your config/app_cfg.py base_config.renderers list.')
-                self.missing_template = True
+
+        return default_renderer
+
+    def _choose_index_template(self):
+        default_renderer = self._get_default_renderer()
+        if not default_renderer:
+            return
 
         index_template = ':'.join((default_renderer, self.config.layout.template_index))
         expose(index_template)(self.index)
@@ -107,7 +115,7 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
                 tmpl_context.make_pager_args = make_pager_args
 
                 if request.response_type not in ('application/json',):
-                    default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
+                    default_renderer = AdminController._get_default_renderer()
                     for layout_template in ('get_all', 'new', 'edit'):
                         for template in config.layout.crud_templates.get(layout_template, []):
                             if template.startswith(default_renderer):

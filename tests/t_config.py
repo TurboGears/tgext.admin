@@ -50,12 +50,6 @@ class TestConfig(AppConfig):
         for key, value in values.items():
             setattr(self, key, value)
 
-    def setup_helpers_and_globals(self):
-        tg.config['pylons.app_globals'] = self.globals
-        tg.config['pylons.h'] = self.helpers
-        g = tg.config['pylons.app_globals']
-        g.dotted_filename_finder = DottedFileNameFinder()
-
         
 _app = None
 def app_from_config(base_config, deployment_config=None):
