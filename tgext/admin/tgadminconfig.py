@@ -77,7 +77,7 @@ class UserControllerConfig(CrudRestControllerConfig):
 
                 def get_value(self, *args, **kw):
                     v = super(UserEditFormFiller, self).get_value(*args, **kw)
-                    del v['password']
+                    v.pop('password', '')
                     return v
 
             self.edit_filler_type = UserEditFormFiller
@@ -99,24 +99,11 @@ class UserControllerConfig(CrudRestControllerConfig):
 
     class defaultCrudRestController(CrudRestController):
         @expose(inherit=True)
-        def edit(self, *args, **kw):
-            return CrudRestController.edit(self, *args, **kw)
-
-        @expose()
-        @registered_validate(error_handler=edit)
         def put(self, *args, **kw):
             """update"""
             if 'password' in kw and not kw['password']:
                 del kw['password']
-
-            pks = self.provider.get_primary_fields(self.model)
-            for i, pk in enumerate(pks):
-                if pk not in kw and i < len(args):
-                    kw[pk] = args[i]
-
-            self.provider.update(self.model, params=kw)
-            redirect('../')
-
+            return super(UserControllerConfig.defaultCrudRestController, self).put(*args, **kw)
 
 class GroupControllerConfig(CrudRestControllerConfig):
     icon_class = 'glyphicon-folder-open'
