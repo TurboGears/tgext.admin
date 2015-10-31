@@ -18,7 +18,7 @@ test_requirements = [
   'transaction',
   'tw2.core',
   'tw2.forms',
-  'mako'
+  'genshi'
 ]
 
 setup(name='tgext.admin',
