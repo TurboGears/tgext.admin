@@ -20,19 +20,19 @@ def setup_records(session):
     #session.expunge_all()
 
     user = User()
-    user.user_name = u'asdf'
-    user.email_address = u"asdf@asdf.com"
-    user.password = u"asdf"
+    user.user_name = 'asdf'
+    user.email_address = "asdf@asdf.com"
+    user.password = "asdf"
     session.add(user)
 
-    arvada = Town(name=u'Arvada')
+    arvada = Town(name='Arvada')
     session.add(arvada)
     session.flush()
     user.town = arvada
 
-    session.add(Town(name=u'Denver'))
-    session.add(Town(name=u'Golden'))
-    session.add(Town(name=u'Boulder'))
+    session.add(Town(name='Denver'))
+    session.add(Town(name='Golden'))
+    session.add(Town(name='Boulder'))
 
     #test_table.insert(values=dict(BLOB=FieldStorage('asdf', StringIO()).value)).execute()
     #user_reference_table.insert(values=dict(user_id=user.user_id)).execute()
@@ -194,7 +194,7 @@ class TestAdminController:
 
     def test_add_user_existing_username(self):
         resp = self.app.post('/admin/users/create', params={'sprox_id':'add__User',
-                                                                   'user_name':u'asdf',
+                                                                   'user_name':'asdf',
                                                                    'display_name':'someone2',
                                                                    'email_address':'asdf2@asdf2.com',
                                                                    '_password':'pass',
