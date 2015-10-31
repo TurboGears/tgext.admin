@@ -9,6 +9,18 @@ try:
 except IOError:
     README = CHANGES = ''
 
+test_requirements = [
+  'nose',
+  'webtest',
+  'TurboGears2',
+  'sqlalchemy',
+  'zope.sqlalchemy',
+  'transaction',
+  'tw2.core',
+  'tw2.forms',
+  'mako'
+]
+
 setup(name='tgext.admin',
       version=version,
       description="Admin Controller add-on for basic TG identity model.",
@@ -33,6 +45,8 @@ setup(name='tgext.admin',
           'tgext.crud >= 0.8.0',
           # -*- Extra requirements: -*-
       ],
+      test_suite='nose.collector',
+      tests_require=test_requirements,
       entry_points="""
       # -*- Entry points: -*-
       """,
