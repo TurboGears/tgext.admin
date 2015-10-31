@@ -1,6 +1,6 @@
 from nose import SkipTest
 import os, sys
-from t_config import TestConfig, app_from_config
+from .t_config import TestConfig, app_from_config
 from tests.model import User, Group, Town
 from tg.util import Bunch
 from sqlalchemy import create_engine
@@ -39,7 +39,7 @@ def setup_records(session):
 
 #    print user.user_id
     for i in ['managers', 'users']:
-        group = Group(group_name=unicode(i))
+        group = Group(group_name=i)
         session.add(group)
 
     user.groups.append(group)

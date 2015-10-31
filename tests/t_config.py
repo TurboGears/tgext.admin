@@ -23,6 +23,7 @@ class TestConfig(AppConfig):
         self.use_sqlalchemy=True
         self.serve_static = False
         self.prefer_toscawidgets2 = True
+        self['templating.genshi.name_constant_patch'] = True
         
         root = os.path.dirname(os.path.dirname(tests.__file__))
         test_base_path = os.path.join(root, 'tests')
