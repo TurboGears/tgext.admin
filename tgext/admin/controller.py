@@ -92,7 +92,9 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
                                                         self.config.DefaultControllerConfig)),
                     models=[model.__name__ for model in self.config.models.values()])
 
-    def _make_controller(self, config, session):
+    @classmethod
+    def make_controller(cls, config, session, left_menu_items=None):
+        """New CRUD controllers using the admin configuration can be created using this."""
         m = config.model
         Controller = config.defaultCrudRestController
 
@@ -116,15 +118,12 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
 
                 if request.response_type not in ('application/json',):
                     default_renderer = AdminController._get_default_renderer()
-                    for layout_template in ('get_all', 'new', 'edit'):
-                        for template in config.layout.crud_templates.get(layout_template, []):
+                    for action in ('get_all', 'new', 'edit'):
+                        for template in config.layout.crud_templates.get(action, []):
                             if template.startswith(default_renderer):
-                                override_template(getattr(self, layout_template), template)
+                                override_template(getattr(self, action), template)
 
-        menu_items = None
-        if self.config.include_left_menu:
-            menu_items = self.config.models
-        return ModelController(session, menu_items)
+        return ModelController(session, left_menu_items)
 
     @expose()
     def _lookup(self, model_name, *args):
@@ -138,7 +137,13 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
             controller = self.controllers_cache[model_name]
         except KeyError:
             config = self.config.lookup_controller_config(model_name)
-            controller = self.controllers_cache[model_name] = self._make_controller(config, self.session)
+
+            menu_items = None
+            if self.config.include_left_menu:
+                menu_items = self.config.models
+
+            controller = self.controllers_cache[model_name] = self.make_controller(config, self.session,
+                                                                                   left_menu_items=menu_items)
 
         return controller, args
 
