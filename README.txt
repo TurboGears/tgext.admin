@@ -4,6 +4,12 @@ Introduction
 Changelog
 ===========
 
+0.7.0
+-----
+
+* Improved template engine detection, didn't work well for unsupported engines. Now admin properly displays when using Kajiki
+* Admin.make_controller is now a public method so that users can leverage it to create new CRUD controllers with Admin lookandfeel
+
 0.6.6
 -----
 * Fix for allow_only not accepting custom predicated

@@ -5,9 +5,8 @@ version = '0.7.0'
 here = os.path.abspath(os.path.dirname(__file__))
 try:
     README = open(os.path.join(here, 'README.txt')).read()
-    CHANGES = open(os.path.join(here, 'docs/HISTORY.txt')).read()
 except IOError:
-    README = CHANGES = ''
+    README = ''
 
 test_requirements = [
   'nose',
@@ -24,8 +23,7 @@ test_requirements = [
 setup(name='tgext.admin',
       version=version,
       description="Admin Controller add-on for basic TG identity model.",
-      long_description=README + "\n" +
-                       CHANGES,
+      long_description=README,
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Programming Language :: Python",
