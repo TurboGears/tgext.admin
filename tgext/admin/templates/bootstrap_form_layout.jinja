@@ -9,7 +9,7 @@
       <div {{ c.container_attrs|xmlattr }}>
         <label for="{{c.compound_id}}" {{ (c|attr('label_attrs') or {})|xmlattr }}>{{ c.label }}</label>
         <div {{ (c|attr('wrapper_attrs') or {})|xmlattr }}>{{c.display()}}</div>
-        {% if not w.hover_help %}{{ c.help_text or '' }}{% endif %}
+        {% if not w.hover_help %}<span class="help-block">{{ c.help_text or '' }}</span>{% endif %}
         <span id="{{ c.compound_id or '' }}:error" class="error help-block">{{ c.error_msg or '' }}</span>
       </div>
     </div>

@@ -14,7 +14,7 @@
         <label for="${c.compound_id}" ${tw.attrs(attrs=getattr(c, 'label_attrs', {}))}>${ c.label or '' }</label>
         <div ${tw.attrs(attrs=getattr(c, 'wrapper_attrs', {}))}>${c.display() | n}</div>
         % if not w.hover_help:
-            ${c.help_text or ''}
+            <span class="help-block">${c.help_text or ''}</span>
         % endif
         <span id="${c.compound_id or ''}:error" class="error help-block">${c.error_msg or ''}</span>
       </div>

@@ -7,7 +7,7 @@
       <div py:attrs="c.container_attrs">
         <label py:if="c.label != None" for="${c.compound_id}" py:attrs="getattr(c, 'label_attrs', {})">$c.label</label>
         <div py:attrs="getattr(c, 'wrapper_attrs', {})">${c.display()}</div>
-        <py:if test="not w.hover_help" class="help-block">$c.help_text</py:if>
+        <span py:if="not w.hover_help" class="help-block">$c.help_text</span>
         <span id="${c.compound_id}:error" class="error help-block" py:content="c.error_msg"/>
       </div>
     </div>
