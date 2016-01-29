@@ -1,5 +1,7 @@
 import inspect
 
+from tg.caching import cached_property
+
 try:
     from sqlalchemy.orm import class_mapper
     from sqlalchemy.orm.exc import UnmappedClassError
@@ -82,9 +84,11 @@ class AdminConfig(object):
             ``tgext.admin.layouts.GroupedBootstrapAdminLayout``.
 
             .. note::
-                ``GroupedBootstrapAdminLayout`` only works with the Genshi
-                template language, so it cannot be used when quickstarting with Jinja or Mako.
+                ``GroupedBootstrapAdminLayout`` only works with the Genshi and Kajiki
+                template languages, so it cannot be used when quickstarting with Jinja or Mako.
 
+        **project_name**
+            Name of the project, by default is same as config['package_name'].
 
         **default_index_template**
             This is the template of the /admin page, by default the one specified
@@ -109,6 +113,7 @@ class AdminConfig(object):
     default_index_template = None
     allow_only = None
     include_left_menu = True
+    project_name = None
 
     def __init__(self, models, translations=None):
         if translations is None:

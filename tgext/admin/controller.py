@@ -57,23 +57,27 @@ class AdminController(TGController):
     @classmethod
     def _get_default_renderer(cls):
         default_renderer = getattr(tg_config, 'default_renderer', 'genshi')
-        if default_renderer not in ['genshi', 'mako', 'jinja']:
+        if default_renderer not in ['genshi', 'mako', 'jinja', 'kajiki']:
             if 'genshi' in tg_config.renderers:
                 default_renderer = 'genshi'
+            elif 'kajiki' in tg_config.renderers:
+                default_renderer = 'kajiki'
             elif 'mako' in tg_config.renderers:
                 default_renderer = 'mako'
             elif 'jinja' in tg_config.renderers:
                 default_renderer = 'jinja'
             else:
                 default_renderer = None
-                log.warn('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
-least one of those to your config/app_cfg.py base_config.renderers list.')
+                log.warn('TurboGears admin supports only Genshi, Kajiki, Mako and Jinja.'
+                         ' please make sure you add at least one of those to your config/app_cfg.py'
+                         ' base_config.renderers list.')
 
         return default_renderer
 
     def _choose_index_template(self):
         default_renderer = self._get_default_renderer()
         if not default_renderer:
+            self.missing_template = True
             return
 
         index_template = ':'.join((default_renderer, self.config.layout.template_index))
@@ -83,10 +87,14 @@ least one of those to your config/app_cfg.py base_config.renderers list.')
     @expose()
     def index(self):
         if self.missing_template:
-            raise Exception('TurboGears admin supports only Genshi, Mako and Jinja, please make sure you add at \
-    least one of those to your config/app_cfg.py base_config.renderers list.')
+            raise Exception(
+                'TurboGears admin supports only Genshi, Kajiki, Mako and Jinja.'
+                ' please make sure you add at least one of those to your config/app_cfg.py'
+                ' base_config.renderers list.'
+            )
 
         return dict(config=self.config,
+                    project_name=self.config.project_name or tg_config['package_name'].capitalize(),
                     model_config=lambda model: (model.lower(),
                                                 getattr(self.config, model.lower(),
                                                         self.config.DefaultControllerConfig)),

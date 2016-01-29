@@ -1,0 +1,24 @@
+<html py:extends="master.xhtml" py:strip="True">
+
+<head py:block="head" py:strip="True">
+    <title py:block="master_title">${tmpl_context.title} - New ${model}</title>
+</head>
+
+<body py:block="body" py:strip="True">
+  <div class="row" py:with="leftmenu=getattr(tmpl_context, 'menu_items', False)">
+    <div class="col-md-2">
+        <ul class="nav crud-sidebar hidden-xs hidden-sm">
+            <li py:for="lower, item in sorted(tmpl_context.menu_items.items())"
+                class="${item==model and 'active' or ''}">
+                <a href="${tmpl_context.crud_helpers.make_link(lower)}">$item</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="${not leftmenu and 'col-md-12' or 'col-md-10'}">
+      <h1 class="page-header">New $model</h1>
+      ${Markup(tmpl_context.widget(value=value, action='./'))}
+    </div>
+  </div>
+</body>
+</html>
