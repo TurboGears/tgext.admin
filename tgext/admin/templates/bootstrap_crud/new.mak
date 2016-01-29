@@ -1,7 +1,7 @@
 <%inherit file="local:templates.master"/>
 
 <%def name="title()">
-${tmpl_context.title} - ${model}
+${tmpl_context.title} - New ${model}
 </%def>
 
   <div class="row">
