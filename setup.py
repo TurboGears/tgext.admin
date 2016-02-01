@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.7.1'
+version = '0.7.2'
 here = os.path.abspath(os.path.dirname(__file__))
 try:
     README = open(os.path.join(here, 'README.txt')).read()
@@ -40,7 +40,7 @@ setup(name='tgext.admin',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'tgext.crud >= 0.8.0',
+          'tgext.crud >= 0.8.2',
           # -*- Extra requirements: -*-
       ],
       test_suite='nose.collector',
