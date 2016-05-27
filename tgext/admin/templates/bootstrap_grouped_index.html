@@ -8,7 +8,7 @@
 
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
-  <title>Turbogears Administration System</title>
+  <title>${value_of('project_name', 'TurboGears')} Administration</title>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <h1 class="page-header">TurboGears Admin</h1>
+      <h1 class="page-header">${value_of('project_name', 'TurboGears')} Admin</h1>
       <p class="lead">
         This is a fully-configurable administrative tool to help you administer your website.<br/>
         Below is links to all of your models.
