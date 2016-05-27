@@ -15,10 +15,13 @@
   <div class="row">
     <div class="col-md-12">
       <h1 class="page-header">${value_of('project_name', 'TurboGears')} Admin</h1>
-      <p class="lead">
-        This is a fully-configurable administrative tool to help you administer your website.<br/>
-        Below is links to all of your models.
-        They will bring you to a listing of the objects in your database.
+      <p class="lead" py:with="custom_payoff=value_of('payoff', None)" py:choose="">
+        <py:when test="custom_payoff is not None">${custom_payoff}</py:when>
+        <py:otherwise>
+          This is a fully-configurable administrative tool to help you administer your website.<br/>
+          Below is links to all of your models.
+          They will bring you to a listing of the objects in your database.
+        </py:otherwise>
       </p>
     </div>
   </div>

@@ -94,6 +94,7 @@ class AdminController(TGController):
             )
 
         return dict(config=self.config,
+                    payoff=self.config.index_payoff,
                     project_name=self.config.project_name or tg_config['package_name'].capitalize(),
                     model_config=lambda model: (model.lower(),
                                                 getattr(self.config, model.lower(),

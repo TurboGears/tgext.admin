@@ -90,6 +90,9 @@ class AdminConfig(object):
         **project_name**
             Name of the project, by default is same as config['package_name'].
 
+        **index_payoff**
+            Custom payoff to display into the admin index page.
+
         **default_index_template**
             This is the template of the /admin page, by default the one specified
             inside the ``layout`` is used.
@@ -114,6 +117,7 @@ class AdminConfig(object):
     allow_only = None
     include_left_menu = True
     project_name = None
+    index_payoff = None
 
     def __init__(self, models, translations=None):
         if translations is None:
