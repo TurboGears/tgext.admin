@@ -35,7 +35,7 @@
           </div>
           <div class="list-group">
             <a py:for="model in models_group"
-               py:with="modelid, modelcfg = model_config(model)"
+               py:with="model_conf=model_config(model); modelid=model_conf[0]; modelcfg=model_conf[1]"
                class="list-group-item" href='${modelid}s/'>
               <h4 class="list-group-item-heading"
                   py:with="glyphicon=getattr(modelcfg, 'icon_class', 'glyphicon-list-alt')">
